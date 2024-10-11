@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
 
@@ -74,8 +75,14 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     }
 
     @Override
-    public void setDistance(double distancePointGoalMeters) {
-        rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation, distancePointGoalMeters)
+    public void setGoal(double distancePointGoalMeters, double speedPointGoalMS) {
+        pidController.setGoal(new State(distancePointGoalMeters, speedPointGoalMS));
+    }
+
+
+    @Override
+    public void runDistance() {
+        rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
                 + ffController.calculate(pidController.getSetpoint().velocity));
 
     }

@@ -26,7 +26,9 @@ public interface ElevatorIO {
     
     public default void updateOutputs(ElevatorIOOutputs outputs) {}
 
-    public default void setDistance(double distancePointGoalMeters) {}
+    public default void setGoal(double distancePointGoalMeters, double speedPointGoalMS) {}
+
+    public default void runDistance() {}
 
     public default boolean atSetpoint() {
         return false;
