@@ -10,6 +10,7 @@ import frc.robot.pioneersLib.controlConstants.PIDConstants;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,6 +18,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class ElevatorIOSparkMax implements ElevatorIO {
 
     private ProfiledPIDController controller;
+    private ElevatorFeedforward ffController;
+
     private PIDConstants controllerConstants;
     private CANSparkMax rigtMotor;
     private CANSparkMax leftMotor;
@@ -37,6 +40,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
         rigtMotor.burnFlash();
         leftMotor.burnFlash();
+
+        ffController = new ElevatorFeedforward(1, 1, 1);
 
         controllerConstants = Constants.Elevator.ELEVATOR_PID;
         controller.setPID(controllerConstants.kP, controllerConstants.kI, controllerConstants.kD);
