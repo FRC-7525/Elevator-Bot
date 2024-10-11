@@ -1,7 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.console.RIOConsoleSource;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -12,13 +10,12 @@ import frc.robot.pioneersLib.controlConstants.PIDConstants;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
-
+    // "Comment your code" 🤓
     private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
 
@@ -32,6 +29,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     private double metersPerRotation;
 
     public ElevatorIOSparkMax() {
+        // Sparkmax configs
+        // TODO: Set to correct motor IDs
         leftMotor = new CANSparkMax(1, MotorType.kBrushless);
         rigtMotor = new CANSparkMax(2, MotorType.kBrushless);
         encoder = rigtMotor.getEncoder();
@@ -45,6 +44,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         rigtMotor.burnFlash();
         leftMotor.burnFlash();
 
+
+        // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID but with a motion profile
         ffConstants = Constants.Elevator.ELEVATOR_FF;
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
@@ -59,6 +60,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         metersPerRotation = Constants.Elevator.DISTANCE_METERS_PER_ROTATION;
     }
 
+    // Update set of logged inputs
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
         inputs.elevatorDistancePointMeters = pidController.getSetpoint().position;
@@ -68,18 +70,20 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         inputs.elevatorPositionMeters = encoder.getPosition() * metersPerRotation;
     }
 
+    // Update set of logged outputs
     @Override
     public void updateOutputs(ElevatorIOOutputs outputs) {
         outputs.leftMotorCurrent = leftMotor.getAppliedOutput();
         outputs.rightMotorCurrent = rigtMotor.getAppliedOutput();
     }
 
+    // Sets the end state of the PID controller, don't need to do anything for ff because it bases its setpoint off the PID setpoint
     @Override
-    public void setGoal(double distancePointGoalMeters, double speedPointGoalMS) {
-        pidController.setGoal(new State(distancePointGoalMeters, speedPointGoalMS));
+    public void setGoal(State goalState) {
+        if (!goalState.equals(pidController.getGoal())) pidController.setGoal(goalState);
     }
 
-
+    // Basically a periodic, runs the motor velocity based on the goal state using FF + profile PID
     @Override
     public void runDistance() {
         rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
@@ -87,6 +91,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     }
 
+    // At setpoint for state transitions
     @Override
     public boolean atSetpoint() {
         return pidController.atSetpoint();

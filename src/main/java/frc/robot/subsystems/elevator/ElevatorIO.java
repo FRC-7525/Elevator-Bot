@@ -3,6 +3,8 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+
 public interface ElevatorIO {
     @AutoLog
     public class ElevatorIOInputs {
@@ -26,7 +28,7 @@ public interface ElevatorIO {
     
     public default void updateOutputs(ElevatorIOOutputs outputs) {}
 
-    public default void setGoal(double distancePointGoalMeters, double speedPointGoalMS) {}
+    public default void setGoal(State goaLState) {}
 
     public default void runDistance() {}
 
