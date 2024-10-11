@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
 
@@ -14,6 +15,9 @@ public final class Constants {
     }
 
     public static final RobotModes ROBOT_STATE = RobotModes.REAL;
+    
+    public static final XboxController DRIVER_CONTROLLER = new XboxController(0);
+    public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
 
     public static final class Elevator {
         public static final String SUBSYTEM_NAME = "Elevator";
