@@ -76,8 +76,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     @Override
     public void setDistance(double distancePointGoalMeters) {
         rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation, distancePointGoalMeters)
-                + ffController.calculate((encoder.getVelocity() * metersPerRotation) / 60,
-                        pidController.getSetpoint().velocity, 0.02));
+                + ffController.calculate(pidController.getSetpoint().velocity));
+
     }
 
     @Override
