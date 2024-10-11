@@ -11,7 +11,6 @@ public class Manager extends Subsystem<ManagerStates> {
     private Elevator elevator;
 
     private XboxController driverController;
-    private XboxController operatorController;
     
     public Manager() {
         super("Manager", ManagerStates.IDLE);
@@ -29,7 +28,6 @@ public class Manager extends Subsystem<ManagerStates> {
         }
 
         driverController = Constants.DRIVER_CONTROLLER;
-        operatorController = Constants.OPERATOR_CONTROLLER;
 
         // Elevator in and out
         addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> driverController.getAButtonPressed());
