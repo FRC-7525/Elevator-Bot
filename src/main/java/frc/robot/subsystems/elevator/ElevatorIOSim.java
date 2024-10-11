@@ -1,20 +1,16 @@
 package frc.robot.subsystems.elevator;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-
 import frc.robot.Constants;
 import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
-
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
-public class ElevatorIOSparkMax implements ElevatorIO {
+public class ElevatorIOSim implements ElevatorIO {
     // "Comment your code" 🤓
     private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
@@ -22,30 +18,16 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     private PIDConstants pidConstants;
     private FFConstants ffConstants;
 
-    private CANSparkMax rigtMotor;
-    private CANSparkMax leftMotor;
-    private RelativeEncoder encoder;
+    private ElevatorSim sim;
 
-    private double metersPerRotation;
+    public ElevatorIOSim() {
+        sim = new ElevatorSim(Constants.Elevator.GEARBOX, Constants.Elevator.GEARING,
+                Constants.Elevator.CARRIAGE_MASS_KG, Constants.Elevator.DRUM_RADIUS_METERS,
+                Constants.Elevator.MIN_HEIGH_METERS, Constants.Elevator.MAX_HEIGHT_METERS,
+                Constants.Elevator.SIMULATE_GRAVITY, Constants.Elevator.STARTING_HEIGHT_METERS);
 
-    public ElevatorIOSparkMax() {
-        // Sparkmax configs
-        // TODO: Set to correct motor IDs
-        leftMotor = new CANSparkMax(1, MotorType.kBrushless);
-        rigtMotor = new CANSparkMax(2, MotorType.kBrushless);
-        encoder = rigtMotor.getEncoder();
-
-        leftMotor.follow(rigtMotor);
-        leftMotor.setInverted(true);
-
-        leftMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
-        rigtMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
-
-        rigtMotor.burnFlash();
-        leftMotor.burnFlash();
-
-
-        // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID but with a motion profile
+        // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID
+        // but with a motion profile
         ffConstants = Constants.Elevator.ELEVATOR_FF;
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
@@ -56,8 +38,6 @@ public class ElevatorIOSparkMax implements ElevatorIO {
                 new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
                         Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
         pidController.setIZone(pidConstants.iZone);
-
-        metersPerRotation = Constants.Elevator.DISTANCE_METERS_PER_ROTATION;
     }
 
     // Update set of logged inputs
@@ -67,29 +47,30 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         inputs.elevatorDistanceSpeedPointMS = pidController.getSetpoint().velocity;
         inputs.elevatorDistancePointGoalMeters = pidController.getGoal().position;
         inputs.elevatorSpeedPointGoalMS = pidController.getGoal().velocity;
-        inputs.elevatorPositionMeters = encoder.getPosition() * metersPerRotation;
+        inputs.elevatorPositionMeters = sim.getPositionMeters();
     }
 
     // Update set of logged outputs
     @Override
     public void updateOutputs(ElevatorIOOutputs outputs) {
-        outputs.leftMotorCurrent = leftMotor.getAppliedOutput();
-        outputs.rightMotorCurrent = rigtMotor.getAppliedOutput();
+        outputs.leftMotorCurrent = sim.getCurrentDrawAmps();
+        outputs.rightMotorCurrent = sim.getCurrentDrawAmps();
     }
 
-    // Sets the end state of the PID controller, don't need to do anything for ff because it bases its setpoint off the PID setpoint
+    // Sets the end state of the PID controller, don't need to do anything for ff
+    // because it bases its setpoint off the PID setpoint
     @Override
     public void setGoal(State goalState) {
-        if (!goalState.equals(pidController.getGoal())) pidController.setGoal(goalState);
+        if (!goalState.equals(pidController.getGoal()))
+            pidController.setGoal(goalState);
     }
 
-    // Basically a periodic, runs the motor velocity based on the goal state using FF + profile PID
-    // Accounting for gear ratio in getPosition is unecessary because meters per rotation takes it into account
+    // Basically a periodic, runs the motor velocity based on the goal state using
+    // FF + profile PID
     @Override
     public void runDistance() {
-        rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
+        sim.setInputVoltage(pidController.calculate(sim.getPositionMeters())
                 + ffController.calculate(pidController.getSetpoint().velocity));
-
     }
 
     // At setpoint for state transitions

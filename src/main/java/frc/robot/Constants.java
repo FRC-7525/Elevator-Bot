@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
@@ -29,6 +30,17 @@ public final class Constants {
 
         public static final double ELEVATOR_MAX_VELOCITY_MPS = 0.2;
         public static final double ELEVATOR_MAX_ACCEL_MPSSQ = 0.1;
+
+
+        // Sim/Physical values
+        public static final DCMotor GEARBOX = DCMotor.getNEO(2);
+        public static final double GEARING = 20;
+        public static final double CARRIAGE_MASS_KG = 2;
+        public static final double DRUM_RADIUS_METERS = 0.5;
+        public static final double MIN_HEIGH_METERS = 0;
+        public static final double MAX_HEIGHT_METERS = 2;
+        public static final double STARTING_HEIGHT_METERS = 0;
+        public static final boolean SIMULATE_GRAVITY = false;
 
         // Set-States
         public static final State ELEVATOR_OUT = new State(1.5, 0);
