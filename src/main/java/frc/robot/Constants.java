@@ -53,6 +53,10 @@ public final class Constants {
         public static final double ZEROING_CURRENT_LIMIT_AMPS = 10.0;
         public static final int SMART_CURRENT_LIMIT_AMPS = 30;
 
+        // CAN IDs
+        public static final int LEFT_CAN_ID = 1;
+        public static final int RIGHT_CAN_ID = 2;
+
         // TODO: SYSID/Tune
         // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others
         public static final FFConstants ELEVATOR_FF = new FFConstants(1, 1, 1, 0);

@@ -31,8 +31,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     public ElevatorIOSparkMax() {
         // Sparkmax configs
         // TODO: Set to correct motor IDs
-        leftMotor = new CANSparkMax(1, MotorType.kBrushless);
-        rigtMotor = new CANSparkMax(2, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(Constants.Elevator.LEFT_CAN_ID, MotorType.kBrushless);
+        rigtMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
         encoder = rigtMotor.getEncoder();
 
         leftMotor.follow(rigtMotor);
