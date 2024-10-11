@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
 
 public final class Constants {
@@ -23,6 +24,8 @@ public final class Constants {
         public static final int SMART_CURRENT_LIMIT_AMPS = 30;
 
         // TODO: SYSID/Tune
+        // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others
+        public static final FFConstants ELEVATOR_FF = new FFConstants(1, 1, 1, 0);
         public static final PIDConstants ELEVATOR_PID = new PIDConstants(0.0, 0.0, 0.0);
     }
 }

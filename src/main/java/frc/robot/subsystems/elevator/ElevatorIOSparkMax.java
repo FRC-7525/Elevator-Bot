@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Constants;
+import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -17,10 +18,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
 
-    private ProfiledPIDController controller;
+    private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
 
-    private PIDConstants controllerConstants;
+    private PIDConstants pidConstants;
+    private FFConstants ffConstants;
+
     private CANSparkMax rigtMotor;
     private CANSparkMax leftMotor;
     private RelativeEncoder encoder;
@@ -41,26 +44,26 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         rigtMotor.burnFlash();
         leftMotor.burnFlash();
 
-        ffController = new ElevatorFeedforward(1, 1, 1);
+        ffConstants = Constants.Elevator.ELEVATOR_FF;
+        ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
-        controllerConstants = Constants.Elevator.ELEVATOR_PID;
-        controller.setPID(controllerConstants.kP, controllerConstants.kI, controllerConstants.kD);
-        controller.setIZone(controllerConstants.iZone);
-
-        controller.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE_METERS, Constants.Elevator.VELOCITY_TOLERANCE_MS);
-        controller = new ProfiledPIDController(controllerConstants.kP, controllerConstants.kI, controllerConstants.kD,
+        pidConstants = Constants.Elevator.ELEVATOR_PID;
+        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE_METERS,
+                Constants.Elevator.VELOCITY_TOLERANCE_MS);
+        pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
                 new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
                         Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
+        pidController.setIZone(pidConstants.iZone);
 
         metersPerRotation = Constants.Elevator.DISTANCE_METERS_PER_ROTATION;
     }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorDistancePointMeters = controller.getSetpoint().position;
-        inputs.elevatorDistanceSpeedPointMS = controller.getSetpoint().velocity;
-        inputs.elevatorDistancePointGoalMeters = controller.getGoal().position;
-        inputs.elevatorSpeedPointGoalMS = controller.getGoal().velocity;
+        inputs.elevatorDistancePointMeters = pidController.getSetpoint().position;
+        inputs.elevatorDistanceSpeedPointMS = pidController.getSetpoint().velocity;
+        inputs.elevatorDistancePointGoalMeters = pidController.getGoal().position;
+        inputs.elevatorSpeedPointGoalMS = pidController.getGoal().velocity;
         inputs.elevatorPositionMeters = encoder.getPosition() * metersPerRotation;
     }
 
@@ -72,12 +75,14 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     @Override
     public void setDistance(double distancePointGoalMeters) {
-        rigtMotor.setVoltage(controller.calculate(encoder.getPosition() * metersPerRotation, distancePointGoalMeters));
+        rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation, distancePointGoalMeters)
+                + ffController.calculate((encoder.getVelocity() * metersPerRotation) / 60,
+                        pidController.getSetpoint().velocity, 0.02));
     }
 
     @Override
     public boolean atSetpoint() {
-        return controller.atSetpoint();
+        return pidController.atSetpoint();
     }
 
 }
