@@ -1,16 +1,15 @@
 package frc.robot.subsystems.manager;
 
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 
 public class Manager extends Subsystem<ManagerStates> {
     
     private Elevator elevator;
-
-    private XboxController driverController;
     
     public Manager() {
         super("Manager", ManagerStates.IDLE);
@@ -20,18 +19,18 @@ public class Manager extends Subsystem<ManagerStates> {
                 elevator = new Elevator(new ElevatorIOSparkMax());
                 break;
             case SIM:
+                elevator = new Elevator(new ElevatorIOSim());
                 break;
             case REPLAY:
+                elevator = new Elevator(new ElevatorIO() {});
                 break;
             default:
                 break;
         }
 
-        driverController = Constants.DRIVER_CONTROLLER;
-
         // Elevator in and out
-        addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> driverController.getAButtonPressed());
-        addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> driverController.getAButtonPressed());
+        addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
+        addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
     }
 
     @Override
