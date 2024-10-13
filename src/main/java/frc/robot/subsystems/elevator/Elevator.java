@@ -13,6 +13,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
     private ElevatorIO io;
     private ElevatorIOInputsAutoLogged inputs;
     private ElevatorIOOutputs outputs;
+    private boolean runningSysId = false;
 
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);
@@ -29,6 +30,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
 
+        if (runningSysId) return;
+
         if (io.elevatorZeroed()) {
             // Run To Position
             io.setGoal(getState().getGoalState());
@@ -39,6 +42,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
     }
 
     public void setVolts(Measure<Voltage> voltage) {
+        runningSysId = true;
         io.runVolts(voltage);
     }
 }

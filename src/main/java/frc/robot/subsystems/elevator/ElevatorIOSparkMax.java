@@ -128,8 +128,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     // Zero the elevator
     @Override
     public void zero() {
-        double leftZeroingSpeed = -0.25;
-        double rightZeroingSpeed = -0.25;
+        double leftZeroingSpeed = -Constants.Elevator.ZEROING_SPEED;
+        double rightZeroingSpeed = -Constants.Elevator.ZEROING_SPEED;
 
         if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
             rightZeroingSpeed = 0;

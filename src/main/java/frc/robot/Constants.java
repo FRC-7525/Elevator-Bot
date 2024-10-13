@@ -74,6 +74,9 @@ public final class Constants {
         // Idle Mode
         public static final IdleMode IDLE_MODE = IdleMode.kBrake;
 
+        // Misc
+        public static final double ZEROING_SPEED = -0.25;
+
         // TODO: SYSID/Tune
         // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others or just SYSID
         public static final FFConstants ELEVATOR_FF = new FFConstants(1, 1, 1, 0);
