@@ -22,7 +22,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     private PIDConstants pidConstants;
     private FFConstants ffConstants;
 
-    private CANSparkMax rigtMotor;
+    private CANSparkMax rightMotor;
     private CANSparkMax leftMotor;
     private RelativeEncoder encoder;
 
@@ -35,20 +35,20 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         // Sparkmax configs
         // TODO: Set to correct motor IDs
         leftMotor = new CANSparkMax(Constants.Elevator.LEFT_CAN_ID, MotorType.kBrushless);
-        rigtMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
-        encoder = rigtMotor.getEncoder();
+        rightMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
+        encoder = rightMotor.getEncoder();
 
-        rigtMotor.setInverted(Constants.Elevator.RIGHT_INVERTED);
-        rigtMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
+        rightMotor.setInverted(Constants.Elevator.RIGHT_INVERTED);
+        rightMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
 
-        leftMotor.follow(rigtMotor);
+        leftMotor.follow(rightMotor);
         leftMotor.setInverted(Constants.Elevator.LEFT_INVERTED);
         leftMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
 
         leftMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
-        rigtMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
+        rightMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
 
-        rigtMotor.burnFlash();
+        rightMotor.burnFlash();
         leftMotor.burnFlash();
 
 
@@ -86,7 +86,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     @Override
     public void updateOutputs(ElevatorIOOutputs outputs) {
         outputs.leftMotorCurrent = leftMotor.getAppliedOutput();
-        outputs.rightMotorCurrent = rigtMotor.getAppliedOutput();
+        outputs.rightMotorCurrent = rightMotor.getAppliedOutput();
     }
 
     // Sets the end state of the PID controller, don't need to do anything for ff because it bases its setpoint off the PID setpoint
@@ -99,9 +99,15 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     // Accounting for gear ratio in getPosition is unecessary because meters per rotation takes it into account
     @Override
     public void runDistance() {
-        rigtMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
+        rightMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
                 + ffController.calculate(pidController.getSetpoint().velocity));
 
+    }
+
+    // TODO: Does left motor volts also need to be set
+    // Open loop control for SYSID
+    public void runVolts(double volts) {
+        rightMotor.setVoltage(volts);
     }
 
     // At setpoint for state transitions
@@ -110,14 +116,14 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         return pidController.atSetpoint();
     }
 
-    // TODO: Is this needed?
+    // TODO: Is this needed? (ask Nick)
     // Zero the elevator
     @Override
     public void zero() {
         double leftZeroingSpeed = -0.25;
         double rightZeroingSpeed = -0.25;
 
-        if (rigtMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
+        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
             rightZeroingSpeed = 0;
             if (!rightMotorZeroed) encoder.setPosition(0); rightMotorZeroed = true;
         }
@@ -127,7 +133,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
             if (!leftMotorZeroed) encoder.setPosition(0); leftMotorZeroed = true;
         }
 
-        rigtMotor.set(rightZeroingSpeed);
+        rightMotor.set(rightZeroingSpeed);
         leftMotor.set(leftZeroingSpeed);
     }
 

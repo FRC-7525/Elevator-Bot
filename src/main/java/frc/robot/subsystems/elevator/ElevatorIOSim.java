@@ -77,6 +77,11 @@ public class ElevatorIOSim implements ElevatorIO {
                 + ffController.calculate(pidController.getSetpoint().velocity));
     }
 
+    // Open loop control for SYSID
+    public void runVolts(double volts) {
+        sim.setInputVoltage(volts);
+    }
+
     // At setpoint for state transitions
     @Override
     public boolean atSetpoint() {

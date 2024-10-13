@@ -31,6 +31,8 @@ public interface ElevatorIO {
 
     public default void runDistance() {}
 
+    public default void runVolts() {}
+
     public default void zero() {}
 
     public default boolean elevatorZeroed() {
