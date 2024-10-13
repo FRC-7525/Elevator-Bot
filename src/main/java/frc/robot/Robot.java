@@ -8,14 +8,19 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
 
 	private Manager managerSubsystem;
+	private CommandScheduler scheduler;
 
 	@Override
 	public void robotInit() {
+		managerSubsystem = new Manager();
+		scheduler = CommandScheduler.getInstance();
+
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
 	}
@@ -27,6 +32,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
+		scheduler.schedule(managerSubsystem.getAutoCommand());
 	}
 
 	@Override
@@ -35,6 +41,8 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
+		// I hate command based!!!
+		scheduler.cancelAll();
 	}
 
 	@Override

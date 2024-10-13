@@ -1,5 +1,6 @@
 package frc.robot.subsystems.manager;
 
+import edu.wpi.first.units.Measure;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.Elevator;
@@ -7,12 +8,19 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 public class Manager extends Subsystem<ManagerStates> {
-    
+
+    private AutoManager autoManager;
     private Elevator elevator;
     
     public Manager() {
         super("Manager", ManagerStates.IDLE);
+
+        autoManager = new AutoManager(this);
 
         switch (Constants.ROBOT_STATE) {
             case REAL:  
@@ -40,6 +48,15 @@ public class Manager extends Subsystem<ManagerStates> {
 
         // Run Subsystem States
         elevator.setState(getState().getElevatorState());
+    }
+
+    // SysId Util
+    public void setElevatorVolts(Measure<Voltage> voltage) {
+        elevator.setVolts(voltage);
+    }
+
+    public Command getAutoCommand() {
+        return autoManager.getSelected();
     }
 }
 

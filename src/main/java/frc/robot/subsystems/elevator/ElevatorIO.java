@@ -4,6 +4,8 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 
 public interface ElevatorIO {
     @AutoLog
@@ -31,7 +33,7 @@ public interface ElevatorIO {
 
     public default void runDistance() {}
 
-    public default void runVolts() {}
+    public default void runVolts(Measure<Voltage> volts) {}
 
     public default void zero() {}
 

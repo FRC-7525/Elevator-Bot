@@ -8,6 +8,8 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
@@ -78,8 +80,9 @@ public class ElevatorIOSim implements ElevatorIO {
     }
 
     // Open loop control for SYSID
-    public void runVolts(double volts) {
-        sim.setInputVoltage(volts);
+    @Override
+    public void runVolts(Measure<Voltage> volts) {
+        sim.setInputVoltage(volts.magnitude());
     }
 
     // At setpoint for state transitions

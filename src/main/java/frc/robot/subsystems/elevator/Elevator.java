@@ -2,6 +2,8 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
@@ -34,5 +36,9 @@ public class Elevator extends Subsystem<ElevatorStates> {
         } else {
             io.zero();
         }
+    }
+
+    public void setVolts(Measure<Voltage> voltage) {
+        io.runVolts(voltage);
     }
 }

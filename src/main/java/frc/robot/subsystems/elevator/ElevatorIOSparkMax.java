@@ -13,6 +13,8 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
     // "Comment your code" 🤓
@@ -106,8 +108,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     // TODO: Does left motor volts also need to be set
     // Open loop control for SYSID
-    public void runVolts(double volts) {
-        rightMotor.setVoltage(volts);
+    @Override
+    public void runVolts(Measure<Voltage> volts) {
+        rightMotor.setVoltage(volts.magnitude());
     }
 
     // At setpoint for state transitions
