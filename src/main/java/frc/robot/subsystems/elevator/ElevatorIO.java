@@ -13,15 +13,18 @@ public interface ElevatorIO {
         double elevatorPositionMeters = 0.0;
         double elevatorDistancePointGoalMeters = 0.0;
         double elevatorSpeedPointGoalMS = 0.0;
+        double elevatorSpeedMS = 0.0;
         double elevatorDistancePointMeters = 0.0;
         double elevatorDistanceSpeedPointMS = 0.0;
+        double elevatorLeftVolts = 0.0;
+        double elevatorRightVolts = 0.0;
         boolean elevatorZeroed = false;
     }
 
     public class  ElevatorIOOutputs {
-        @AutoLogOutput
+        @AutoLogOutput(key = "Elevator/Left Motor Current")
         double leftMotorCurrent = 0.0;
-        @AutoLogOutput
+        @AutoLogOutput(key = "Elevator/Right Motor Current")
         double rightMotorCurrent = 0.0;
     }
 

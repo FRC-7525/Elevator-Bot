@@ -10,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
@@ -19,6 +20,8 @@ public class ElevatorIOSim implements ElevatorIO {
 
     private PIDConstants pidConstants;
     private FFConstants ffConstants;
+
+    private double volts;
 
     private boolean simZeroed;
 
@@ -36,6 +39,7 @@ public class ElevatorIOSim implements ElevatorIO {
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
         pidConstants = Constants.Elevator.ELEVATOR_PID;
+        pidController = new ProfiledPIDController(0, 0, 0, null);
         pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
                 Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
         pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
@@ -44,21 +48,34 @@ public class ElevatorIOSim implements ElevatorIO {
         pidController.setIZone(pidConstants.iZone);
         // No null pointers
         simZeroed = false;
+        volts = 0;
     }
 
     // Update set of logged inputs
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
+        sim.update(0.02);
         inputs.elevatorDistancePointMeters = pidController.getSetpoint().position;
         inputs.elevatorDistanceSpeedPointMS = pidController.getSetpoint().velocity;
+        inputs.elevatorSpeedMS = sim.getVelocityMetersPerSecond();
         inputs.elevatorDistancePointGoalMeters = pidController.getGoal().position;
         inputs.elevatorSpeedPointGoalMS = pidController.getGoal().velocity;
         inputs.elevatorPositionMeters = sim.getPositionMeters();
+        inputs.elevatorZeroed = simZeroed;
+        inputs.elevatorRightVolts = volts;
+        inputs.elevatorLeftVolts = volts;
     }
 
     // Update set of logged outputs
     @Override
-    public void updateOutputs(ElevatorIOOutputs outputs) {
+    public void updateOutputs(ElevatorIOOutputs outputs) { 
+        // Otherwise current stays up when you're disabled :/ make an issue or sum idk
+        if (DriverStation.isDisabled()) {
+            outputs.leftMotorCurrent = 0; 
+            outputs.rightMotorCurrent = 0;
+            return;
+        }
+
         outputs.leftMotorCurrent = sim.getCurrentDrawAmps();
         outputs.rightMotorCurrent = sim.getCurrentDrawAmps();
     }
@@ -75,14 +92,16 @@ public class ElevatorIOSim implements ElevatorIO {
     // FF + profile PID
     @Override
     public void runDistance() {
-        sim.setInputVoltage(pidController.calculate(sim.getPositionMeters())
-                + ffController.calculate(pidController.getSetpoint().velocity));
+        volts = pidController.calculate(sim.getPositionMeters())
+                + ffController.calculate(pidController.getSetpoint().velocity);
+        sim.setInputVoltage(volts);
     }
 
     // Open loop control for SYSID
     @Override
     public void runVolts(Measure<Voltage> volts) {
-        sim.setInputVoltage(volts.magnitude());
+        this.volts = volts.magnitude();
+        sim.setInputVoltage(this.volts);
     }
 
     // At setpoint for state transitions

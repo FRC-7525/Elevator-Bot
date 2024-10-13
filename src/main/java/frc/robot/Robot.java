@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.manager.Manager;
 
@@ -20,6 +21,9 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		managerSubsystem = new Manager();
 		scheduler = CommandScheduler.getInstance();
+
+		// PLEASE NEVER COMMENT THIS
+		DriverStation.silenceJoystickConnectionWarning(true);
 
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
@@ -43,6 +47,7 @@ public class Robot extends LoggedRobot {
 	public void teleopInit() {
 		// I hate command based!!!
 		scheduler.cancelAll();
+		managerSubsystem.exitSysId();
 	}
 
 	@Override
@@ -51,6 +56,8 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
+		// Set ur sysId routine to "none" once you disable (so when you stop running the test)
+		// managerSubsystem.resetSysIdState();
 	}
 
 	@Override

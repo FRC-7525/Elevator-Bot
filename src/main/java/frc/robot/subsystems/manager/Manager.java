@@ -18,8 +18,6 @@ public class Manager extends Subsystem<ManagerStates> {
     public Manager() {
         super("Manager", ManagerStates.IDLE);
 
-        autoManager = new AutoManager(this);
-
         switch (Constants.ROBOT_STATE) {
             case REAL:  
                 elevator = new Elevator(new ElevatorIOSparkMax());
@@ -33,6 +31,9 @@ public class Manager extends Subsystem<ManagerStates> {
             default:
                 break;
         }
+
+        // Keep this below the swith statement to avoid null pointers :(
+        autoManager = new AutoManager(this);
 
         // Elevator in and out
         addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
@@ -48,9 +49,17 @@ public class Manager extends Subsystem<ManagerStates> {
         elevator.setState(getState().getElevatorState());
     }
 
-    // SysId Util
-    public void setElevatorVolts(Measure<Voltage> voltage) {
-        elevator.setVolts(voltage);
+    // // SysId Util
+    // public void setElevatorVolts(Measure<Voltage> voltage) {
+    //     elevator.setVolts(voltage);
+    // }
+
+    public Command getQualstaticForward() {
+        return elevator.getQualstaticForward();
+    }
+
+    public void exitSysId() {
+        elevator.exitSysId();
     }
 
     public Command getAutoCommand() {

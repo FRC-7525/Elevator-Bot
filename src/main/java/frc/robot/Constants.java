@@ -23,7 +23,7 @@ public final class Constants {
         REPLAY
     }
 
-    public static final RobotModes ROBOT_STATE = RobotModes.REAL;
+    public static final RobotModes ROBOT_STATE = RobotModes.SIM;
     
     public static final XboxController DRIVER_CONTROLLER = new XboxController(0);
 
@@ -79,7 +79,7 @@ public final class Constants {
 
         // TODO: SYSID/Tune
         // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others or just SYSID
-        public static final FFConstants ELEVATOR_FF = new FFConstants(1, 1, 1, 0);
-        public static final PIDConstants ELEVATOR_PID = new PIDConstants(0.0, 0.0, 0.0, 0.0);
+        public static final FFConstants ELEVATOR_FF = new FFConstants(0, 0, 0, 0);
+        public static final PIDConstants ELEVATOR_PID = new PIDConstants(1.0, 0.1, 0.1, 0.01);
     }
 }

@@ -61,6 +61,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         ffConstants = Constants.Elevator.ELEVATOR_FF;
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
+        pidController = new ProfiledPIDController(0, 0, 0, null);
         pidConstants = Constants.Elevator.ELEVATOR_PID;
         pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
                 Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
