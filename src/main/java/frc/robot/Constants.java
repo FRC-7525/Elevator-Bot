@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,7 +20,12 @@ public final class Constants {
     
     public static final XboxController DRIVER_CONTROLLER = new XboxController(0);
 
+    public static final class Manager {
+        // Should hold toggles for different triggers
+    }
+
     public static final class Elevator {
+        // Subsystem Constants
         public static final String SUBSYTEM_NAME = "Elevator";
 
         // Configs for control loop & stuff
@@ -33,7 +40,6 @@ public final class Constants {
 
         public static final double ELEVATOR_MAX_VELOCITY_MPS = 0.2;
         public static final double ELEVATOR_MAX_ACCEL_MPSSQ = 0.1;
-
 
         // Sim/Physical values
         public static final DCMotor GEARBOX = DCMotor.getNEO(2);
@@ -57,8 +63,15 @@ public final class Constants {
         public static final int LEFT_CAN_ID = 1;
         public static final int RIGHT_CAN_ID = 2;
 
+        // Inversions
+        public static final boolean LEFT_INVERTED = true;
+        public static final boolean RIGHT_INVERTED = !LEFT_INVERTED;
+
+        // Idle Mode
+        public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+
         // TODO: SYSID/Tune
-        // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others
+        // Note, kA can prolly stay at 0, use https://www.reca.lc/ to calculate others or just SYSID
         public static final FFConstants ELEVATOR_FF = new FFConstants(1, 1, 1, 0);
         public static final PIDConstants ELEVATOR_PID = new PIDConstants(0.0, 0.0, 0.0, 0.0);
     }

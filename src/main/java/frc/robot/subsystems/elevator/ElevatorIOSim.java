@@ -11,12 +11,14 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
-    // "Comment your code" 🤓
+
     private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
 
     private PIDConstants pidConstants;
     private FFConstants ffConstants;
+
+    private boolean simZeroed;
 
     private ElevatorSim sim;
 
@@ -38,6 +40,8 @@ public class ElevatorIOSim implements ElevatorIO {
                 new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
                         Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
         pidController.setIZone(pidConstants.iZone);
+        // No null pointers
+        simZeroed = false;
     }
 
     // Update set of logged inputs
@@ -77,6 +81,17 @@ public class ElevatorIOSim implements ElevatorIO {
     @Override
     public boolean atSetpoint() {
         return pidController.atSetpoint();
+    }
+
+    // Sim is already zeroed, no need to do it again
+    @Override
+    public void zero() {
+        simZeroed = true;
+    }
+
+    @Override
+    public boolean elevatorZeroed() {
+        return simZeroed;
     }
 
 }

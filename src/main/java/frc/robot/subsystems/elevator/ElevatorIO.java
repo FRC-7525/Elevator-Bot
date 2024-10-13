@@ -9,12 +9,11 @@ public interface ElevatorIO {
     @AutoLog
     public class ElevatorIOInputs {
         double elevatorPositionMeters = 0.0;
-
         double elevatorDistancePointGoalMeters = 0.0;
         double elevatorSpeedPointGoalMS = 0.0;
         double elevatorDistancePointMeters = 0.0;
         double elevatorDistanceSpeedPointMS = 0.0;
-
+        boolean elevatorZeroed = false;
     }
 
     public class  ElevatorIOOutputs {
@@ -31,6 +30,12 @@ public interface ElevatorIO {
     public default void setGoal(State goaLState) {}
 
     public default void runDistance() {}
+
+    public default void zero() {}
+
+    public default boolean elevatorZeroed() {
+        return false;
+    }
 
     public default boolean atSetpoint() {
         return false;

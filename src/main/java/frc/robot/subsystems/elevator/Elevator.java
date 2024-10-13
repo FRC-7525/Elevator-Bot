@@ -26,9 +26,13 @@ public class Elevator extends Subsystem<ElevatorStates> {
         Logger.processInputs(Constants.Elevator.SUBSYTEM_NAME, inputs);
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
-        
-        // Run To Position
-        io.setGoal(getState().getGoalState());
-        io.runDistance();
+
+        if (io.elevatorZeroed()) {
+            // Run To Position
+            io.setGoal(getState().getGoalState());
+            io.runDistance();
+        } else {
+            io.zero();
+        }
     }
 }

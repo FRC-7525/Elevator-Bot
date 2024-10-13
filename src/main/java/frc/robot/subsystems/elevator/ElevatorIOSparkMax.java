@@ -26,6 +26,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     private CANSparkMax leftMotor;
     private RelativeEncoder encoder;
 
+    private boolean rightMotorZeroed;
+    private boolean leftMotorZeroed;
+
     private double metersPerRotation;
 
     public ElevatorIOSparkMax() {
@@ -35,8 +38,12 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         rigtMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
         encoder = rigtMotor.getEncoder();
 
+        rigtMotor.setInverted(Constants.Elevator.RIGHT_INVERTED);
+        rigtMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
+
         leftMotor.follow(rigtMotor);
-        leftMotor.setInverted(true);
+        leftMotor.setInverted(Constants.Elevator.LEFT_INVERTED);
+        leftMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
 
         leftMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
         rigtMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
@@ -58,6 +65,10 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         pidController.setIZone(pidConstants.iZone);
 
         metersPerRotation = Constants.Elevator.DISTANCE_METERS_PER_ROTATION;
+
+        // No null pointers
+        rightMotorZeroed = false;
+        leftMotorZeroed = false;
     }
 
     // Update set of logged inputs
@@ -68,6 +79,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         inputs.elevatorDistancePointGoalMeters = pidController.getGoal().position;
         inputs.elevatorSpeedPointGoalMS = pidController.getGoal().velocity;
         inputs.elevatorPositionMeters = encoder.getPosition() * metersPerRotation;
+        inputs.elevatorZeroed = elevatorZeroed();
     }
 
     // Update set of logged outputs
@@ -98,4 +110,29 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         return pidController.atSetpoint();
     }
 
+    // TODO: Is this needed?
+    // Zero the elevator
+    @Override
+    public void zero() {
+        double leftZeroingSpeed = -0.25;
+        double rightZeroingSpeed = -0.25;
+
+        if (rigtMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
+            rightZeroingSpeed = 0;
+            if (!rightMotorZeroed) encoder.setPosition(0); rightMotorZeroed = true;
+        }
+
+        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
+            leftZeroingSpeed = 0;
+            if (!leftMotorZeroed) encoder.setPosition(0); leftMotorZeroed = true;
+        }
+
+        rigtMotor.set(rightZeroingSpeed);
+        leftMotor.set(leftZeroingSpeed);
+    }
+
+    @Override
+    public boolean elevatorZeroed() {
+        return leftMotorZeroed && rightMotorZeroed;
+    }
 }
