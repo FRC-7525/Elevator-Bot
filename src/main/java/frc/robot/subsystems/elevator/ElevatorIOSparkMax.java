@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
     // "Comment your code" 🤓
@@ -27,6 +28,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     private CANSparkMax rightMotor;
     private CANSparkMax leftMotor;
     private RelativeEncoder encoder;
+
+    private DigitalInput limitSwitch;
 
     private boolean rightMotorZeroed;
     private boolean leftMotorZeroed;
@@ -67,6 +70,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         pidController.setIZone(pidConstants.iZone);
 
         metersPerRotation = Constants.Elevator.DISTANCE_PER_ROTATION.magnitude();
+
+        limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO);
 
         // No null pointers
         rightMotorZeroed = false;
@@ -126,12 +131,12 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         double leftZeroingSpeed = -0.25;
         double rightZeroingSpeed = -0.25;
 
-        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude()) {
+        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
             rightZeroingSpeed = 0;
             if (!rightMotorZeroed) encoder.setPosition(0); rightMotorZeroed = true;
         }
 
-        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude()) {
+        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
             leftZeroingSpeed = 0;
             if (!leftMotorZeroed) encoder.setPosition(0); leftMotorZeroed = true;
         }

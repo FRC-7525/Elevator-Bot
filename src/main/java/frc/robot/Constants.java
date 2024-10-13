@@ -62,9 +62,10 @@ public final class Constants {
         public static final Measure<Current> ZEROING_CURRENT_LIMIT = Amps.of(10.0);
         public static final Measure<Current> SMART_CURRENT_LIMIT = Amps.of(30);
 
-        // CAN IDs
+        // Device IDs
         public static final int LEFT_CAN_ID = 1;
         public static final int RIGHT_CAN_ID = 2;
+        public static final int LIMIT_SWITCH_DIO = 0;
 
         // Inversions
         public static final boolean LEFT_INVERTED = true;
