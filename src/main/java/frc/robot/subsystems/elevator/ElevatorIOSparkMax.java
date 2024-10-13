@@ -47,8 +47,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         leftMotor.setInverted(Constants.Elevator.LEFT_INVERTED);
         leftMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
 
-        leftMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
-        rightMotor.setSmartCurrentLimit(Constants.Elevator.SMART_CURRENT_LIMIT_AMPS);
+        leftMotor.setSmartCurrentLimit((int) Constants.Elevator.SMART_CURRENT_LIMIT.magnitude());
+        rightMotor.setSmartCurrentLimit((int) Constants.Elevator.SMART_CURRENT_LIMIT.magnitude());
 
         rightMotor.burnFlash();
         leftMotor.burnFlash();
@@ -59,14 +59,14 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
         pidConstants = Constants.Elevator.ELEVATOR_PID;
-        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE_METERS,
-                Constants.Elevator.VELOCITY_TOLERANCE_MS);
+        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
+                Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
         pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
                 new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
                         Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
         pidController.setIZone(pidConstants.iZone);
 
-        metersPerRotation = Constants.Elevator.DISTANCE_METERS_PER_ROTATION;
+        metersPerRotation = Constants.Elevator.DISTANCE_PER_ROTATION.magnitude();
 
         // No null pointers
         rightMotorZeroed = false;
@@ -126,12 +126,12 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         double leftZeroingSpeed = -0.25;
         double rightZeroingSpeed = -0.25;
 
-        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
+        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude()) {
             rightZeroingSpeed = 0;
             if (!rightMotorZeroed) encoder.setPosition(0); rightMotorZeroed = true;
         }
 
-        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT_AMPS) {
+        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude()) {
             leftZeroingSpeed = 0;
             if (!leftMotorZeroed) encoder.setPosition(0); leftMotorZeroed = true;
         }

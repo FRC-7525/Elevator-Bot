@@ -26,9 +26,9 @@ public class ElevatorIOSim implements ElevatorIO {
 
     public ElevatorIOSim() {
         sim = new ElevatorSim(Constants.Elevator.GEARBOX, Constants.Elevator.GEARING,
-                Constants.Elevator.CARRIAGE_MASS_KG, Constants.Elevator.DRUM_RADIUS_METERS,
-                Constants.Elevator.MIN_HEIGH_METERS, Constants.Elevator.MAX_HEIGHT_METERS,
-                Constants.Elevator.SIMULATE_GRAVITY, Constants.Elevator.STARTING_HEIGHT_METERS);
+                Constants.Elevator.CARRIAGE_MASS.magnitude(), Constants.Elevator.DRUM_RADIUS.magnitude(),
+                Constants.Elevator.MIN_HEIGHT.magnitude(), Constants.Elevator.MAX_HEIGHT.magnitude(),
+                Constants.Elevator.SIMULATE_GRAVITY, Constants.Elevator.STARTING_HEIGHT.magnitude());
 
         // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID
         // but with a motion profile
@@ -36,8 +36,8 @@ public class ElevatorIOSim implements ElevatorIO {
         ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
 
         pidConstants = Constants.Elevator.ELEVATOR_PID;
-        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE_METERS,
-                Constants.Elevator.VELOCITY_TOLERANCE_MS);
+        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
+                Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
         pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
                 new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
                         Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
