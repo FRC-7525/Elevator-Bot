@@ -10,6 +10,7 @@ import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Manager extends Subsystem<ManagerStates> {
 
     private AutoManager autoManager;
@@ -42,6 +43,12 @@ public class Manager extends Subsystem<ManagerStates> {
 
     @Override
     public void runState() {
+
+        if (Constants.DRIVER_CONTROLLER.getBButtonPressed()) {
+            // CommandScheduler.getInstance().schedule(elevator.getSysIdCommand());
+            elevator.scheduleSysIdCommand();
+        }
+
         // Run Subsystem Periodics
         elevator.periodic();
 
@@ -53,10 +60,6 @@ public class Manager extends Subsystem<ManagerStates> {
     // public void setElevatorVolts(Measure<Voltage> voltage) {
     //     elevator.setVolts(voltage);
     // }
-
-    public Command getQualstaticForward() {
-        return elevator.getQualstaticForward();
-    }
 
     public void exitSysId() {
         elevator.exitSysId();

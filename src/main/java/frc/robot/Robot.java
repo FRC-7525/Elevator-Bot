@@ -36,7 +36,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
-		scheduler.schedule(managerSubsystem.getAutoCommand());
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void teleopInit() {
 		// I hate command based!!!
-		scheduler.cancelAll();
+		// scheduler.cancelAll();
 		managerSubsystem.exitSysId();
 	}
 

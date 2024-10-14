@@ -18,7 +18,7 @@ public class AutoManager {
         autoChooser.setDefaultOption("Do Nothing", new PrintCommand("Does Literally Nothing"));
 
         // Elevator SysId
-        autoChooser.addOption("Elevator Qualstatic Forward", manager.getQualstaticForward());
+        // autoChooser.addOption("Elevator Qualstatic Forward", manager.getQualstaticForward());
         // autoChooser.addOption("Elevator Dynamic Reverse", elevatorSysId.getDynamicReverse());
         // autoChooser.addOption("Elevator Quasistatic Forward", elevatorSysId.getQualstaticForward());
         // autoChooser.addOption("Elevator Quasistatic Reverse", elevatorSysId.getQualstaticReverse());

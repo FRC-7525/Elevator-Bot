@@ -8,10 +8,12 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.FillerSubsystem;
+import frc.robot.pioneersLib.SysIdWrapper;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
 
@@ -20,8 +22,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
     private ElevatorIO io;
     private ElevatorIOInputsAutoLogged inputs;
     private ElevatorIOOutputs outputs;
+    private SysIdWrapper sysIdWrapper;
     private boolean runningSysId = false;
-    private SysIdRoutine sysId;
 
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);
@@ -30,20 +32,16 @@ public class Elevator extends Subsystem<ElevatorStates> {
         this.inputs = new ElevatorIOInputsAutoLogged();
         this.outputs = new ElevatorIOOutputs();
 
-        sysId = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                    null,
-                    null,
-                    null,
-                    (state) -> Logger.recordOutput("Elevator" + "/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (voltage) -> setVolts(voltage), null, new FillerSubsystem("Elevator")));
+        sysIdWrapper = new SysIdWrapper("Elevator", (setVolts) -> setVolts(setVolts));
+    } 
+
+    public Command getSysIdCommand() {
+        return sysIdWrapper.getDynamicForward();
     }
 
-    public Command getQualstaticForward() {
-        CommandScheduler.getInstance().schedule(sysId.quasistatic(Direction.kForward));
-        return sysId.quasistatic(Direction.kForward);
-    }   
+    public void scheduleSysIdCommand() {
+        sysIdWrapper.scheduleQuasistaticForward();
+    }
 
     @Override
     public void runState() {
@@ -52,7 +50,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
 
-        if (runningSysId) return;
+        // if (runningSysId) {return;}
+        // System.out.println("lalala");
 
         if (io.elevatorZeroed()) {
             // Run To Position
@@ -69,7 +68,6 @@ public class Elevator extends Subsystem<ElevatorStates> {
      */
     public void setVolts(Measure<Voltage> voltage) {
         runningSysId = true;
-        // System.out.println("lallala");
         io.runVolts(voltage);
     }
 
