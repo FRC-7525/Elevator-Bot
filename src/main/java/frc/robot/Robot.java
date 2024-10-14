@@ -47,6 +47,7 @@ public class Robot extends LoggedRobot {
 		// I hate command based!!!
 		// scheduler.cancelAll();
 		managerSubsystem.exitSysId();
+		managerSubsystem.runSum();
 	}
 
 	@Override

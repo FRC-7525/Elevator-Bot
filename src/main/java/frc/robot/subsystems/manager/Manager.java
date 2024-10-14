@@ -44,11 +44,6 @@ public class Manager extends Subsystem<ManagerStates> {
     @Override
     public void runState() {
 
-        if (Constants.DRIVER_CONTROLLER.getBButtonPressed()) {
-            // CommandScheduler.getInstance().schedule(elevator.getSysIdCommand());
-            elevator.scheduleSysIdCommand();
-        }
-
         // Run Subsystem Periodics
         elevator.periodic();
 
@@ -56,10 +51,10 @@ public class Manager extends Subsystem<ManagerStates> {
         elevator.setState(getState().getElevatorState());
     }
 
-    // // SysId Util
-    // public void setElevatorVolts(Measure<Voltage> voltage) {
-    //     elevator.setVolts(voltage);
-    // }
+    // SysId Util
+    public void setElevatorVolts(Measure<Voltage> voltage) {
+        elevator.setVolts(voltage);
+    }
 
     public void exitSysId() {
         elevator.exitSysId();
@@ -67,6 +62,10 @@ public class Manager extends Subsystem<ManagerStates> {
 
     public Command getAutoCommand() {
         return autoManager.getSelected();
+    }
+
+    public void runSum() {
+        elevator.runSum();
     }
 }
 
