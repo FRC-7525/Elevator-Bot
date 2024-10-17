@@ -42,6 +42,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         leftMotor = new CANSparkMax(Constants.Elevator.LEFT_CAN_ID, MotorType.kBrushless);
         rightMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
         encoder = rightMotor.getEncoder();
+        encoder.setPositionConversionFactor(1);
+        encoder.setVelocityConversionFactor(1);
 
         rightMotor.setInverted(Constants.Elevator.RIGHT_INVERTED);
         rightMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
