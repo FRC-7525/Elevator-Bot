@@ -9,18 +9,15 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
 
 	private Manager managerSubsystem;
-	private CommandScheduler scheduler;
 
 	@Override
 	public void robotInit() {
 		managerSubsystem = new Manager();
-		scheduler = CommandScheduler.getInstance();
 
 		// PLEASE NEVER COMMENT THIS
 		DriverStation.silenceJoystickConnectionWarning(true);
@@ -44,10 +41,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		// I hate command based!!!
-		// scheduler.cancelAll();
-		managerSubsystem.exitSysId();
-		managerSubsystem.runSum();
 	}
 
 	@Override
