@@ -16,7 +16,6 @@ public class Elevator extends Subsystem<ElevatorStates> {
     private ElevatorIOOutputs outputs;
 
     private SysIdRoutine sysIdRoutine;
-    private SysIdRoutine.Config sysIdConfig;
 
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);

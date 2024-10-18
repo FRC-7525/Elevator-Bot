@@ -9,7 +9,6 @@ import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 public class Manager extends Subsystem<ManagerStates> {
 
@@ -39,6 +38,12 @@ public class Manager extends Subsystem<ManagerStates> {
         // Elevator in and out
         addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
         addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
+        
+        // SysID Nonsense
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kForward)), () -> Constants.SYSID_CONTROLLER.getXButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kReverse)), () -> Constants.SYSID_CONTROLLER.getAButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kForward)), () -> Constants.SYSID_CONTROLLER.getBButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kReverse)), () -> Constants.SYSID_CONTROLLER.getYButtonPressed());
     }
 
     @Override
@@ -49,23 +54,6 @@ public class Manager extends Subsystem<ManagerStates> {
 
         // Run Subsystem States
         elevator.setState(getState().getElevatorState());
-
-        // SysID
-        if (Constants.SYSID_CONTROLLER.getXButtonPressed()) {
-            CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kForward));
-        }
-
-        if (Constants.SYSID_CONTROLLER.getAButtonPressed()) {
-            CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kReverse));
-        }
-
-        if (Constants.SYSID_CONTROLLER.getBButtonPressed()) {
-            CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kForward));
-        }
-
-        if (Constants.SYSID_CONTROLLER.getYButtonPressed()) {
-            CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kReverse));
-        }
     }
 
     public Command getAutoCommand() {
