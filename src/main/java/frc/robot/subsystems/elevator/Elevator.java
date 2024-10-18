@@ -52,6 +52,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
     }
 
     public Command getDynamic(Direction direction) {
+        System.out.println("dynamic routine");
         return sysIdRoutine.dynamic(direction);
     }
 }
