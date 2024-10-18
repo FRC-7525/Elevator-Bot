@@ -24,7 +24,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
         this.inputs = new ElevatorIOInputsAutoLogged();
         this.outputs = new ElevatorIOOutputs();
 
-        sysIdRoutine = new SysIdRoutine(
+        this.sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
                 new SysIdRoutine.Mechanism(io::runVolts, null, this));
     }
