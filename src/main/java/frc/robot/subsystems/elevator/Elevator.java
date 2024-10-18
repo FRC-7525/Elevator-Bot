@@ -2,15 +2,21 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
 
 public class Elevator extends Subsystem<ElevatorStates> {
-    
+
     private ElevatorIO io;
     private ElevatorIOInputsAutoLogged inputs;
     private ElevatorIOOutputs outputs;
+
+    private SysIdRoutine sysIdRoutine;
+    private SysIdRoutine.Config sysIdConfig;
 
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);
@@ -18,7 +24,11 @@ public class Elevator extends Subsystem<ElevatorStates> {
 
         this.inputs = new ElevatorIOInputsAutoLogged();
         this.outputs = new ElevatorIOOutputs();
-    } 
+
+        sysIdRoutine = new SysIdRoutine(
+                new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                new SysIdRoutine.Mechanism(io::runVolts, null, this));
+    }
 
     @Override
     public void runState() {
@@ -34,5 +44,15 @@ public class Elevator extends Subsystem<ElevatorStates> {
         } else {
             io.zero();
         }
+    }
+
+    // Command Factories
+    public Command getQualstatic(Direction direction) {
+        System.out.println("qualstatic routine");
+        return sysIdRoutine.quasistatic(direction);
+    }
+
+    public Command getDynamic(Direction direction) {
+        return sysIdRoutine.dynamic(direction);
     }
 }

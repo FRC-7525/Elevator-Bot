@@ -101,7 +101,7 @@ public class ElevatorIOSim implements ElevatorIO {
     @Override
     public void runVolts(Measure<Voltage> volts) {
         this.volts = volts.magnitude();
-        System.out.println(this.volts);
+        System.out.println(volts);
         sim.setInputVoltage(this.volts);
     }
 
