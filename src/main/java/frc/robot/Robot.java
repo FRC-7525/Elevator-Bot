@@ -38,6 +38,11 @@ public class Robot extends LoggedRobot {
 		managerSubsystem.periodic();
 
 		// Nah bc why wasn't this getting called before
+		// TODO: Subsystem periodics called twice bc custom subsystem extends
+		// subsystembase for sysid & pplib, so either make wrapper classes for
+		// interacting with sysId using & pplib using dummy subsystems or deal with it
+		// ig? Optionally just do CommandScheduler.getInstance().disable() in teleop init & when sysId is off
+		// would still double run in tele but whatever
 		CommandScheduler.getInstance().run();
 	}
 
