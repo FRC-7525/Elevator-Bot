@@ -11,6 +11,8 @@ import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
 
+import static edu.wpi.first.units.Units.*;
+
 public class Elevator extends Subsystem<ElevatorStates> {
 
     private ElevatorIO io;
@@ -41,7 +43,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
 
-        if (sysId) return;
+        // While sysId is getting run don't run state for other stuff
+        if (sysId) {sysId = false; return;};
 
         if (io.elevatorZeroed()) {
             // Run To Position
@@ -53,17 +56,16 @@ public class Elevator extends Subsystem<ElevatorStates> {
     }
 
     public void runVolts(Measure<Voltage> volts) {
+        sysId = true;
         io.runVolts(volts);
     }
 
     // Command Factories
     public Command getQualstatic(Direction direction) {
-        System.out.println("qualstatic routine");
         return sysIdRoutine.quasistatic(direction);
     }
 
     public Command getDynamic(Direction direction) {
-        System.out.println("dynamic routine");
         return sysIdRoutine.dynamic(direction);
     }
 }

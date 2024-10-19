@@ -18,6 +18,7 @@ public class AutoManager {
     }
 
     public Command getSelected() {
+        System.out.println("Command for auto scheduled");
         return autoChooser.getSelected();
     }
 }

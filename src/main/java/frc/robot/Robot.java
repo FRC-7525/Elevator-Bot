@@ -10,6 +10,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.pioneersLib.misc.CommandsUtil;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -26,15 +28,22 @@ public class Robot extends LoggedRobot {
 
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
+
+		// Logs all running commands & unique commands (debugging for auto/sysId)
+		CommandsUtil.logCommands();
 	}
 
 	@Override
 	public void robotPeriodic() {
 		managerSubsystem.periodic();
+
+		// Nah bc why wasn't this getting called before
+		CommandScheduler.getInstance().run();
 	}
 
 	@Override
 	public void autonomousInit() {
+		CommandScheduler.getInstance().cancelAll();
 	}
 
 	@Override
@@ -43,6 +52,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
+		CommandScheduler.getInstance().cancelAll();
 	}
 
 	@Override
