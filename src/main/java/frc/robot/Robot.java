@@ -51,8 +51,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		// Set ur sysId routine to "none" once you disable (so when you stop running the test)
-		// managerSubsystem.resetSysIdState();
 	}
 
 	@Override
