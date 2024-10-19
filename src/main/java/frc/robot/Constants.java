@@ -26,9 +26,11 @@ public final class Constants {
     public static final RobotModes ROBOT_STATE = RobotModes.SIM;
     
     // Driver drives, operator preps states, sys id is for tuning only
-    public static final XboxController DRIVER_CONTROLLER = new XboxController(0);
-    public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
-    public static final XboxController SYSID_CONTROLLER = new XboxController(2);
+    public static final class Controllers {
+        public static final XboxController DRIVER_CONTROLLER = new XboxController(0);
+        public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
+        public static final XboxController SYSID_CONTROLLER = new XboxController(2);
+    }
 
     public static final class Manager {
         // Should hold toggles for different triggers

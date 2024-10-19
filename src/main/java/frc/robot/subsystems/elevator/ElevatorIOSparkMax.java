@@ -3,10 +3,6 @@ package frc.robot.subsystems.elevator;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
-import frc.robot.Constants;
-import frc.robot.pioneersLib.controlConstants.FFConstants;
-import frc.robot.pioneersLib.controlConstants.PIDConstants;
-
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -17,13 +13,11 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 
+import static frc.robot.Constants.Elevator.*;
+
 public class ElevatorIOSparkMax implements ElevatorIO {
-    // "Comment your code" 🤓
     private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
-
-    private PIDConstants pidConstants;
-    private FFConstants ffConstants;
 
     private CANSparkMax rightMotor;
     private CANSparkMax leftMotor;
@@ -39,42 +33,40 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     public ElevatorIOSparkMax() {
         // Sparkmax configs
         // TODO: Set to correct motor IDs
-        leftMotor = new CANSparkMax(Constants.Elevator.LEFT_CAN_ID, MotorType.kBrushless);
-        rightMotor = new CANSparkMax(Constants.Elevator.RIGHT_CAN_ID, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(LEFT_CAN_ID, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(RIGHT_CAN_ID, MotorType.kBrushless);
         encoder = rightMotor.getEncoder();
         encoder.setPositionConversionFactor(1);
         encoder.setVelocityConversionFactor(1);
 
-        rightMotor.setInverted(Constants.Elevator.RIGHT_INVERTED);
-        rightMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
+        rightMotor.setInverted(RIGHT_INVERTED);
+        rightMotor.setIdleMode(IDLE_MODE);
 
         leftMotor.follow(rightMotor);
-        leftMotor.setInverted(Constants.Elevator.LEFT_INVERTED);
-        leftMotor.setIdleMode(Constants.Elevator.IDLE_MODE);
+        leftMotor.setInverted(LEFT_INVERTED);
+        leftMotor.setIdleMode(IDLE_MODE);
 
-        leftMotor.setSmartCurrentLimit((int) Constants.Elevator.SMART_CURRENT_LIMIT.magnitude());
-        rightMotor.setSmartCurrentLimit((int) Constants.Elevator.SMART_CURRENT_LIMIT.magnitude());
+        leftMotor.setSmartCurrentLimit((int) SMART_CURRENT_LIMIT.magnitude());
+        rightMotor.setSmartCurrentLimit((int) SMART_CURRENT_LIMIT.magnitude());
 
         rightMotor.burnFlash();
         leftMotor.burnFlash();
 
 
         // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID but with a motion profile
-        ffConstants = Constants.Elevator.ELEVATOR_FF;
-        ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
+        ffController = new ElevatorFeedforward(ELEVATOR_FF.kS, ELEVATOR_FF.kG, ELEVATOR_FF.kV, ELEVATOR_FF.kA);
 
         pidController = new ProfiledPIDController(0, 0, 0, null);
-        pidConstants = Constants.Elevator.ELEVATOR_PID;
-        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
-                Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
-        pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
-                new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
-                        Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
-        pidController.setIZone(pidConstants.iZone);
+        pidController.setTolerance(DISTANCE_TOLERANCE.magnitude(),
+                VELOCITY_TOLERANCE.magnitude());
+        pidController = new ProfiledPIDController(ELEVATOR_PID.kP, ELEVATOR_PID.kI, ELEVATOR_PID.kD,
+                new TrapezoidProfile.Constraints(ELEVATOR_MAX_VELOCITY_MPS,
+                        ELEVATOR_MAX_ACCEL_MPSSQ));
+        pidController.setIZone(ELEVATOR_PID.iZone);
 
-        metersPerRotation = Constants.Elevator.DISTANCE_PER_ROTATION.magnitude();
+        metersPerRotation = DISTANCE_PER_ROTATION.magnitude();
 
-        limitSwitch = new DigitalInput(Constants.Elevator.LIMIT_SWITCH_DIO);
+        limitSwitch = new DigitalInput(LIMIT_SWITCH_DIO);
 
         // No null pointers
         rightMotorZeroed = false;
@@ -131,15 +123,15 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     // Zero the elevator
     @Override
     public void zero() {
-        double leftZeroingSpeed = -Constants.Elevator.ZEROING_SPEED;
-        double rightZeroingSpeed = -Constants.Elevator.ZEROING_SPEED;
+        double leftZeroingSpeed = -ZEROING_SPEED;
+        double rightZeroingSpeed = -ZEROING_SPEED;
 
-        if (rightMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
+        if (rightMotor.getOutputCurrent() > ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
             rightZeroingSpeed = 0;
             if (!rightMotorZeroed) encoder.setPosition(0); rightMotorZeroed = true;
         }
 
-        if (leftMotor.getOutputCurrent() > Constants.Elevator.ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
+        if (leftMotor.getOutputCurrent() > ZEROING_CURRENT_LIMIT.magnitude() || !limitSwitch.get()) {
             leftZeroingSpeed = 0;
             if (!leftMotorZeroed) encoder.setPosition(0); leftMotorZeroed = true;
         }

@@ -1,9 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import frc.robot.Constants;
-import frc.robot.pioneersLib.controlConstants.FFConstants;
-import frc.robot.pioneersLib.controlConstants.PIDConstants;
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -13,13 +9,12 @@ import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
+import static frc.robot.Constants.Elevator.*;
+
 public class ElevatorIOSim implements ElevatorIO {
 
     private ProfiledPIDController pidController;
     private ElevatorFeedforward ffController;
-
-    private PIDConstants pidConstants;
-    private FFConstants ffConstants;
 
     private double volts;
 
@@ -28,24 +23,22 @@ public class ElevatorIOSim implements ElevatorIO {
     private ElevatorSim sim;
 
     public ElevatorIOSim() {
-        sim = new ElevatorSim(Constants.Elevator.GEARBOX, Constants.Elevator.GEARING,
-                Constants.Elevator.CARRIAGE_MASS.magnitude(), Constants.Elevator.DRUM_RADIUS.magnitude(),
-                Constants.Elevator.MIN_HEIGHT.magnitude(), Constants.Elevator.MAX_HEIGHT.magnitude(),
-                Constants.Elevator.SIMULATE_GRAVITY, Constants.Elevator.STARTING_HEIGHT.magnitude());
+        sim = new ElevatorSim(GEARBOX, GEARING,
+                CARRIAGE_MASS.magnitude(), DRUM_RADIUS.magnitude(),
+                MIN_HEIGHT.magnitude(), MAX_HEIGHT.magnitude(),
+                SIMULATE_GRAVITY, STARTING_HEIGHT.magnitude());
 
         // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID
         // but with a motion profile
-        ffConstants = Constants.Elevator.ELEVATOR_FF;
-        ffController = new ElevatorFeedforward(ffConstants.kS, ffConstants.kG, ffConstants.kV, ffConstants.kA);
+        ffController = new ElevatorFeedforward(ELEVATOR_FF.kS, ELEVATOR_FF.kG, ELEVATOR_FF.kV, ELEVATOR_FF.kA);
 
-        pidConstants = Constants.Elevator.ELEVATOR_PID;
         pidController = new ProfiledPIDController(0, 0, 0, null);
-        pidController.setTolerance(Constants.Elevator.DISTANCE_TOLERANCE.magnitude(),
-                Constants.Elevator.VELOCITY_TOLERANCE.magnitude());
-        pidController = new ProfiledPIDController(pidConstants.kP, pidConstants.kI, pidConstants.kD,
-                new TrapezoidProfile.Constraints(Constants.Elevator.ELEVATOR_MAX_VELOCITY_MPS,
-                        Constants.Elevator.ELEVATOR_MAX_ACCEL_MPSSQ));
-        pidController.setIZone(pidConstants.iZone);
+        pidController.setTolerance(DISTANCE_TOLERANCE.magnitude(),
+                VELOCITY_TOLERANCE.magnitude());
+        pidController = new ProfiledPIDController(ELEVATOR_PID.kP, ELEVATOR_PID.kI, ELEVATOR_PID.kD,
+                new TrapezoidProfile.Constraints(ELEVATOR_MAX_VELOCITY_MPS,
+                        ELEVATOR_MAX_ACCEL_MPSSQ));
+        pidController.setIZone(ELEVATOR_PID.iZone);
         // No null pointers
         simZeroed = false;
         volts = 0;
@@ -68,10 +61,10 @@ public class ElevatorIOSim implements ElevatorIO {
 
     // Update set of logged outputs
     @Override
-    public void updateOutputs(ElevatorIOOutputs outputs) { 
+    public void updateOutputs(ElevatorIOOutputs outputs) {
         // Otherwise current stays up when you're disabled :/ make an issue or sum idk
         if (DriverStation.isDisabled()) {
-            outputs.leftMotorCurrent = 0; 
+            outputs.leftMotorCurrent = 0;
             outputs.rightMotorCurrent = 0;
             return;
         }

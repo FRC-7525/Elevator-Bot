@@ -9,6 +9,9 @@ import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
+import static frc.robot.Constants.Controllers.*;
+
 public class Manager extends Subsystem<ManagerStates> {
 
     private AutoManager autoManager;
@@ -35,17 +38,17 @@ public class Manager extends Subsystem<ManagerStates> {
         autoManager = new AutoManager(this);
 
         // Elevator in and out
-        addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
-        addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> Constants.DRIVER_CONTROLLER.getAButtonPressed());
+        addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> DRIVER_CONTROLLER.getAButtonPressed());
+        addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> DRIVER_CONTROLLER.getAButtonPressed());
         
         // SysID Nonsense
-        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kForward)), () -> Constants.SYSID_CONTROLLER.getXButtonPressed());
-        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kReverse)), () -> Constants.SYSID_CONTROLLER.getAButtonPressed());
-        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kForward)), () -> Constants.SYSID_CONTROLLER.getBButtonPressed());
-        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kReverse)), () -> Constants.SYSID_CONTROLLER.getYButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kForward)), () -> SYSID_CONTROLLER.getXButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kReverse)), () -> SYSID_CONTROLLER.getAButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kForward)), () -> SYSID_CONTROLLER.getBButtonPressed());
+        addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getQualstatic(Direction.kReverse)), () -> SYSID_CONTROLLER.getYButtonPressed());
 
         // Saftey for not doing bad stuff or sum
-        addRunnableTrigger(() -> {CommandScheduler.getInstance().cancelAll(); setState(ManagerStates.IDLE);}, () -> Constants.OPERATOR_CONTROLLER.getXButtonPressed());
+        addRunnableTrigger(() -> {CommandScheduler.getInstance().cancelAll(); setState(ManagerStates.IDLE);}, () -> OPERATOR_CONTROLLER.getXButtonPressed());
     }
 
     @Override
@@ -55,7 +58,7 @@ public class Manager extends Subsystem<ManagerStates> {
         elevator.periodic();
 
         // Run Subsystem States 
-        // elevator.setState(getState().getElevatorState());
+        elevator.setState(getState().getElevatorState());
     }
 
     public Command getAutoCommand() {

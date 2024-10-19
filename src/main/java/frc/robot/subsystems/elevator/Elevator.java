@@ -11,8 +11,6 @@ import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
 
-import static edu.wpi.first.units.Units.*;
-
 public class Elevator extends Subsystem<ElevatorStates> {
 
     private ElevatorIO io;
