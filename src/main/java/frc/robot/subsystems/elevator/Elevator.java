@@ -2,6 +2,8 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -17,6 +19,9 @@ public class Elevator extends Subsystem<ElevatorStates> {
 
     private SysIdRoutine sysIdRoutine;
 
+    // Find a good way to do this that isn't this
+    private Boolean sysId = true;   
+
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);
         this.io = io;
@@ -26,7 +31,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
 
         this.sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
-                new SysIdRoutine.Mechanism(io::runVolts, null, this));
+                new SysIdRoutine.Mechanism(this::runVolts, null, this));
     }
 
     @Override
@@ -36,6 +41,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
 
+        if (sysId) return;
+
         if (io.elevatorZeroed()) {
             // Run To Position
             io.setGoal(getState().getGoalState());
@@ -43,6 +50,10 @@ public class Elevator extends Subsystem<ElevatorStates> {
         } else {
             io.zero();
         }
+    }
+
+    public void runVolts(Measure<Voltage> volts) {
+        io.runVolts(volts);
     }
 
     // Command Factories
