@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.Elevator.*;
 
@@ -27,6 +28,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     private boolean rightMotorZeroed;
     private boolean leftMotorZeroed;
+    private boolean logPID;
 
     private double metersPerRotation;
 
@@ -71,6 +73,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         // No null pointers
         rightMotorZeroed = false;
         leftMotorZeroed = false;
+        logPID = true;
     }
 
     // Update set of logged inputs
@@ -82,6 +85,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         inputs.elevatorSpeedPointGoalMS = pidController.getGoal().velocity;
         inputs.elevatorPositionMeters = encoder.getPosition() * metersPerRotation;
         inputs.elevatorZeroed = elevatorZeroed();
+        if (logPID) SmartDashboard.putData("Elevator Controller", pidController);
     }
 
     // Update set of logged outputs
@@ -104,6 +108,15 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         rightMotor.setVoltage(pidController.calculate(encoder.getPosition() * metersPerRotation)
                 + ffController.calculate(pidController.getSetpoint().velocity));
 
+    }
+
+    /**
+     * Set the logPID boolean, should be enabled while tuning PID values
+     * @param logPID if or not to log PID to SD
+     */
+    @Override
+    public void setLogPID(boolean logPID) {
+        this.logPID = logPID;
     }
 
     // TODO: Does left motor volts also need to be set

@@ -25,6 +25,8 @@ public class Elevator extends Subsystem<ElevatorStates> {
     public Elevator(ElevatorIO io) {
         super(Constants.Elevator.SUBSYTEM_NAME, ElevatorStates.IN);
         this.io = io;
+        // NOTE: SET THIS TO FALSE IF UR NOT TUNING!
+        io.setLogPID(true);
 
         this.inputs = new ElevatorIOInputsAutoLogged();
         this.outputs = new ElevatorIOOutputs();

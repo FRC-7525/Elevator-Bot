@@ -8,6 +8,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.Elevator.*;
 
@@ -19,6 +20,7 @@ public class ElevatorIOSim implements ElevatorIO {
     private double volts;
 
     private boolean simZeroed;
+    private boolean logPID;
 
     private ElevatorSim sim;
 
@@ -41,6 +43,7 @@ public class ElevatorIOSim implements ElevatorIO {
         pidController.setIZone(ELEVATOR_PID.iZone);
         // No null pointers
         simZeroed = false;
+        logPID = false;
         volts = 0;
     }
 
@@ -57,6 +60,7 @@ public class ElevatorIOSim implements ElevatorIO {
         inputs.elevatorZeroed = simZeroed;
         inputs.elevatorRightVolts = volts;
         inputs.elevatorLeftVolts = volts;
+        if (logPID) SmartDashboard.putData("Elevator Controller", pidController);
     }
 
     // Update set of logged outputs
@@ -96,6 +100,15 @@ public class ElevatorIOSim implements ElevatorIO {
         this.volts = volts.magnitude();
         System.out.println(volts);
         sim.setInputVoltage(this.volts);
+    }
+
+    /**
+     * Set the logPID boolean, should be enabled while tuning PID values
+     * @param logPID if or not to log PID to SD
+     */
+    @Override
+    public void setLogPID(boolean logPID) {
+        this.logPID = logPID;
     }
 
     // At setpoint for state transitions

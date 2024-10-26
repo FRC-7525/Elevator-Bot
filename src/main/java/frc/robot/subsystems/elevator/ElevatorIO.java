@@ -40,6 +40,8 @@ public interface ElevatorIO {
 
     public default void zero() {}
 
+    public default void setLogPID(boolean logPID) {}
+
     public default boolean elevatorZeroed() {
         return false;
     }
