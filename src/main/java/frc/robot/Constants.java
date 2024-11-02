@@ -13,7 +13,7 @@ import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.controlConstants.FFConstants;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
-import frc.robot.pioneersLib.subsystem.SubsystemStateContainer;
+import frc.robot.pioneersLib.subsystem.SubsystemState;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -161,9 +161,9 @@ public final class Constants {
         }
 
         public static final class SetStates {
-            public static final SubsystemStateContainer sIDLE = SubsystemStateContainer.fromOpeningIntakeStates("Idle", Rotation2d.fromDegrees(60), RotationsPerSecond.of(0));
-            public static final SubsystemStateContainer sINTAKE = SubsystemStateContainer.fromOpeningIntakeStates("Intake", Rotation2d.fromDegrees(0), RotationsPerSecond.of(-10));
-            public static final SubsystemStateContainer sOUTTAKE = SubsystemStateContainer.fromOpeningIntakeStates("Outtake", Rotation2d.fromDegrees(0), RotationsPerSecond.of(30));
+            public static final SubsystemState sIDLE = SubsystemState.fromOpeningIntakeStates("Idle", Rotation2d.fromDegrees(60), RotationsPerSecond.of(0));
+            public static final SubsystemState sINTAKE = SubsystemState.fromOpeningIntakeStates("Intake", Rotation2d.fromDegrees(0), RotationsPerSecond.of(-10));
+            public static final SubsystemState sOUTTAKE = SubsystemState.fromOpeningIntakeStates("Outtake", Rotation2d.fromDegrees(0), RotationsPerSecond.of(30));
         }
         // Thresholds
         public static final Rotation2d POSITON_TOLERANCE = Rotation2d.fromDegrees(2);

@@ -17,7 +17,7 @@ import edu.wpi.first.units.Velocity;
  * If your state is not included in one of the factory methods you need to split up your subsystem
  * or tell mech to build a different robot 
  */
-public record SubsystemStateContainer(
+public record SubsystemState(
     String stateString,
     Measure<Distance> position,
     Rotation2d angularPosition,
@@ -30,64 +30,64 @@ public record SubsystemStateContainer(
      * Primary constructor for all fields.
      * Validates the state to prevent invalid combinations.
      */
-    public SubsystemStateContainer {
+    public SubsystemState {
         validateState();
     }
 
     /**
      * Static factory method for defining a subsystem with pivot states
      */
-    public static SubsystemStateContainer fromPivotStates(String stateString, Rotation2d angularPosition) {
-        return new SubsystemStateContainer(stateString, null, angularPosition, null, null, null, null);
+    public static SubsystemState fromPivotStates(String stateString, Rotation2d angularPosition) {
+        return new SubsystemState(stateString, null, angularPosition, null, null, null, null);
     }
 
     /** 
      * Static factory method for defining a subsystem with just elevator states
     */
-    public static SubsystemStateContainer fromElevatorStates(String stateString, Measure<Distance> position, Measure<Velocity<Distance>> velocity) {
-        return new SubsystemStateContainer(stateString, position, null, velocity, null, null, null);
+    public static SubsystemState fromElevatorStates(String stateString, Measure<Distance> position, Measure<Velocity<Distance>> velocity) {
+        return new SubsystemState(stateString, position, null, velocity, null, null, null);
     }
 
     /**
      * Static factory method for defining a subsystem with just intake states
      */
-    public static SubsystemStateContainer fromOpeningIntakeStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
-        return new SubsystemStateContainer(stateString, null, angularPosition, null, angularVelocity, null, null);
+    public static SubsystemState fromOpeningIntakeStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemState(stateString, null, angularPosition, null, angularVelocity, null, null);
     }
 
     /**
      * Static factory method for defining a subsystem with just intake states
      */
-    public static SubsystemStateContainer fromIntakeStates(String stateString, Measure<Velocity<Angle>> angularVelocity) {
-        return new SubsystemStateContainer(stateString, null, null, null, angularVelocity, null, null);
+    public static SubsystemState fromIntakeStates(String stateString, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemState(stateString, null, null, null, angularVelocity, null, null);
     }
 
     /** 
      * Static factory method for defining a subsystem with just flywheel states
     */
-    public static SubsystemStateContainer fromFlywheelStates(String stateString, Measure<Velocity<Angle>> velocity) {
-        return new SubsystemStateContainer(stateString, null, null, null, velocity, null, null);
+    public static SubsystemState fromFlywheelStates(String stateString, Measure<Velocity<Angle>> velocity) {
+        return new SubsystemState(stateString, null, null, null, velocity, null, null);
     }
 
     /** 
      * Static factory method for defining a subsystem with just flywheel states (uneven flywheels for spin)
     */
-    public static SubsystemStateContainer fromUnevenFlywheelStates(String stateString, Measure<Velocity<Angle>> velocity, Measure<Velocity<Angle>> secondaryVelocity) {
-        return new SubsystemStateContainer(stateString, null, null, null, velocity, secondaryVelocity, null);
+    public static SubsystemState fromUnevenFlywheelStates(String stateString, Measure<Velocity<Angle>> velocity, Measure<Velocity<Angle>> secondaryVelocity) {
+        return new SubsystemState(stateString, null, null, null, velocity, secondaryVelocity, null);
     }
 
     /**
      * Static factory method for defining a subsystem with spinner and pivot states
      */
-    public static SubsystemStateContainer fromPivotWithSpinnerStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
-        return new SubsystemStateContainer(stateString, null, angularPosition, null, angularVelocity, null, null);
+    public static SubsystemState fromPivotWithSpinnerStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemState(stateString, null, angularPosition, null, angularVelocity, null, null);
     }  
     
     /** 
      * Static factory method for defining a subsystem with just turret states (mech pls build this)
     */
-    public static SubsystemStateContainer fromTurettStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
-        return new SubsystemStateContainer(stateString, null, angularPosition, null, angularVelocity, null, null);
+    public static SubsystemState fromTurettStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemState(stateString, null, angularPosition, null, angularVelocity, null, null);
     }
 
     /**

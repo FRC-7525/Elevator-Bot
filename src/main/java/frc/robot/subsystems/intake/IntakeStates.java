@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
-import frc.robot.pioneersLib.subsystem.SubsystemStateContainer;
+import frc.robot.pioneersLib.subsystem.SubsystemState;
 import frc.robot.pioneersLib.subsystem.SubsystemStates;
 
 import static frc.robot.Constants.Intake.SetStates.*;
@@ -14,11 +14,11 @@ public enum IntakeStates implements SubsystemStates{
     OUTTAKE(sOUTTAKE),
     IDLE(sIDLE);
     
-    IntakeStates(SubsystemStateContainer state) {
+    IntakeStates(SubsystemState state) {
         this.state = state;
     }
 
-    private SubsystemStateContainer state;
+    private SubsystemState state;
 
     @Override
     public String getStateString() {
