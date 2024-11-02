@@ -47,6 +47,20 @@ public record SubsystemStateContainer(
         return new SubsystemStateContainer(stateString, position, null, velocity, null, null, null);
     }
 
+    /**
+     * Static factory method for defining a subsystem with just intake states
+     */
+    public static SubsystemStateContainer fromOpeningIntakeStates(String stateString, Rotation2d angularPosition, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemStateContainer(stateString, null, angularPosition, null, angularVelocity, null, null);
+    }
+
+    /**
+     * Static factory method for defining a subsystem with just intake states
+     */
+    public static SubsystemStateContainer fromIntakeStates(String stateString, Measure<Velocity<Angle>> angularVelocity) {
+        return new SubsystemStateContainer(stateString, null, null, null, angularVelocity, null, null);
+    }
+
     /** 
      * Static factory method for defining a subsystem with just flywheel states
     */
