@@ -3,11 +3,9 @@ package frc.robot.subsystems.intake;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOOutputs;
 
-import static frc.robot.Constants.Elevator.SUBSYTEM_NAME;
-
 import org.littletonrobotics.junction.Logger;
 
-import frc.robot.Constants;
+import static frc.robot.Constants.Intake.*;
 
 public class Intake extends Subsystem<IntakeStates> {
 
@@ -23,7 +21,7 @@ public class Intake extends Subsystem<IntakeStates> {
 
     @Override
     public void runState() {
-        Logger.processInputs(Constants.Elevator.SUBSYTEM_NAME, inputs);
+        Logger.processInputs(SUBSYTEM_NAME, inputs);
         io.updateInputs(inputs);
         io.updateOutputs(outputs);
 
