@@ -6,6 +6,9 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -16,6 +19,7 @@ public class Manager extends Subsystem<ManagerStates> {
 
     private AutoManager autoManager;
     private Elevator elevator;
+    private Intake intake;
     
     public Manager() {
         super("Manager", ManagerStates.IDLE);
@@ -23,12 +27,15 @@ public class Manager extends Subsystem<ManagerStates> {
         switch (Constants.ROBOT_STATE) {
             case REAL:  
                 elevator = new Elevator(new ElevatorIOSparkMax());
+                intake = new Intake(new IntakeIOSparkMax());
                 break;
             case SIM:
                 elevator = new Elevator(new ElevatorIOSim());
+                intake = new Intake(new IntakeIOSim());
                 break;
             case REPLAY:
                 elevator = new Elevator(new ElevatorIO() {});
+                intake = new Intake(new IntakeIOSparkMax());
                 break;
             default:
                 break;
@@ -37,9 +44,14 @@ public class Manager extends Subsystem<ManagerStates> {
         // Keep this below the swith statement to avoid null pointers :(
         autoManager = new AutoManager(this);
 
-        // Elevator in and out
-        addTrigger(ManagerStates.IDLE, ManagerStates.PASSING, () -> DRIVER_CONTROLLER.getAButtonPressed());
+        // Passing
+        addTrigger(ManagerStates.IDLE, ManagerStates.RISING, () -> DRIVER_CONTROLLER.getAButtonPressed());
+        addTrigger(ManagerStates.RISING, ManagerStates.PASSING, () -> elevator.atSetpoint());
         addTrigger(ManagerStates.PASSING, ManagerStates.IDLE, () -> DRIVER_CONTROLLER.getAButtonPressed());
+
+        // Intaking
+        addTrigger(ManagerStates.IDLE, ManagerStates.INTAKING, () -> DRIVER_CONTROLLER.getBButtonPressed());
+        addTrigger(ManagerStates.INTAKING, ManagerStates.IDLE, () -> DRIVER_CONTROLLER.getBButtonPressed());
         
         // SysID Nonsense
         addRunnableTrigger(() -> CommandScheduler.getInstance().schedule(elevator.getDynamic(Direction.kForward)), () -> SYSID_CONTROLLER.getXButtonPressed());
@@ -56,6 +68,7 @@ public class Manager extends Subsystem<ManagerStates> {
 
         // Run Subsystem Periodics (comment out for sysId if u wana be safe ig)
         elevator.periodic();
+        intake.periodic();
 
         // Run Subsystem States 
         elevator.setState(getState().getElevatorState());

@@ -1,39 +1,36 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
+import frc.robot.pioneersLib.subsystem.SubsystemStateContainer;
 import frc.robot.pioneersLib.subsystem.SubsystemStates;
 
-public enum IntakeStates implements SubsystemStates{
-    INTAKE("Intake", RotationsPerSecond.of(1), Rotation2d.fromDegrees(0.0)),
-    OUTTAKE("Outtake", RotationsPerSecond.of(1), Rotation2d.fromDegrees(0.0));
+import static frc.robot.Constants.Intake.SetStates.*;
 
-    IntakeStates(String stateString, Measure<Velocity<Angle>>  speedPoint, Rotation2d setPoint) {
-        this.stateString = stateString;
-        this.speedPoint = speedPoint;
-        this.setPoint = setPoint;
+public enum IntakeStates implements SubsystemStates{
+    INTAKE(sINTAKE),
+    OUTTAKE(sOUTTAKE),
+    IDLE(sIDLE);
+    
+    IntakeStates(SubsystemStateContainer state) {
+        this.state = state;
     }
 
-    String stateString;
-    Measure<Velocity<Angle>>  speedPoint;
-    Rotation2d setPoint;
+    private SubsystemStateContainer state;
 
     @Override
     public String getStateString() {
-        return stateString;
+        return state.stateString();
     }
 
-    public Measure<Velocity<Angle>>  getSpeedPoint() {
-        return speedPoint;
+    public Measure<Velocity<Angle>> getSpeedPoint() {
+        return state.angularVelocity();
     }
 
     public Rotation2d getSetPoint() {
-        return setPoint;
+        return state.angularPosition();
     }
 }
 

@@ -15,7 +15,7 @@ public class Intake extends Subsystem<IntakeStates> {
     private IntakeIOInputsAutoLogged inputs;
     private IntakeIOOutputs outputs;
 
-    Intake(IntakeIO io) {
+    public Intake(IntakeIO io) {
         super(SUBSYTEM_NAME, IntakeStates.INTAKE);
 
         this.io = io;
@@ -33,5 +33,9 @@ public class Intake extends Subsystem<IntakeStates> {
 
     public void logPID(boolean logPID) {
         io.setLogPID(logPID);
+    }
+
+    public boolean atSetpoint() {
+        return io.atSetpoint();
     }
 }

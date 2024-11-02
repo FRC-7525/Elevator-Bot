@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Angle;
@@ -101,7 +102,7 @@ public record SubsystemStateContainer(
             throw new IllegalArgumentException("U prob have conversion errors or L code (velocity > 40m/s)");
         }
 
-        if (angularVelocity.in(RPM)/60 > 200 || secondaryVelocity.in(RPM)/60 > 200) {
+        if (angularVelocity.in(RotationsPerSecond) > 200 || secondaryVelocity.in(RPM)/60 > 200) {
             throw new IllegalArgumentException("What motor is going 200 RPS or why is gearing so low? fix ur robot or code");
         }
 

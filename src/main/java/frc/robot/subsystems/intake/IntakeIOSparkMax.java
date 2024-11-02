@@ -39,7 +39,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
         spinnerMotor.setIdleMode(SPINN_IDLE_MODE);
         positionMotor.setIdleMode(POSITION_IDLE_MODE);
-        
+
         spinnerMotor.getEncoder().setVelocityConversionFactor(1);
         spinnerMotor.getEncoder().setPositionConversionFactor(1);
         positionMotor.getEncoder().setVelocityConversionFactor(1);
@@ -88,7 +88,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
     @Override
     public void setSpeed(Measure<Velocity<Angle>> speed) {
-        positionPID.setSetpoint(speed.in(RotationsPerSecond));
+        if (speed.in(RotationsPerSecond) != positionPID.getSetpoint()) positionPID.setSetpoint(speed.in(RotationsPerSecond));
         spinnerMotor.set(speedFF.calculate(spinnerPID.calculate(spinnerMotor.getEncoder().getVelocity(), speed.in(RotationsPerSecond))) + positionPID.calculate(spinnerMotor.getEncoder().getVelocity()));
     }
 

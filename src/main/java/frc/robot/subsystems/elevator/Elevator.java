@@ -2,8 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -31,7 +29,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
 
         this.sysIdRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
-                new SysIdRoutine.Mechanism(this::runVolts, null, this));
+                new SysIdRoutine.Mechanism(io::runVolts, null, this));
     }
 
     @Override
@@ -53,9 +51,12 @@ public class Elevator extends Subsystem<ElevatorStates> {
         }
     }
 
-    public void runVolts(Measure<Voltage> volts) {
-        sysId = true;
-        io.runVolts(volts);
+    public boolean atSetpoint() {
+        return io.atSetpoint();
+    }
+
+    public void logPID(boolean logPID) {
+        io.setLogPID(logPID);
     }
 
     // Command Factories
@@ -65,9 +66,5 @@ public class Elevator extends Subsystem<ElevatorStates> {
 
     public Command getDynamic(Direction direction) {
         return sysIdRoutine.dynamic(direction);
-    }
-
-    public void logPID(boolean logPID) {
-        io.setLogPID(logPID);
     }
 }
