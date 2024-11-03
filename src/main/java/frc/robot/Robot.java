@@ -21,7 +21,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotInit() {
 		System.out.println("init called");
-		managerSubsystem = new Manager();
 
 		// PLEASE NEVER COMMENT THIS
 		DriverStation.silenceJoystickConnectionWarning(true);
@@ -37,17 +36,18 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotPeriodic() {
 		// System.out.println("Robot actually runned");
-		managerSubsystem.periodic();
 		CommandScheduler.getInstance().run();
 	}
 
 	@Override
 	public void autonomousInit() {
 		CommandScheduler.getInstance().cancelAll();
+		managerSubsystem = new Manager();
 	}
 
 	@Override
 	public void autonomousPeriodic() {
+		managerSubsystem.periodic();
 	}
 
 	@Override

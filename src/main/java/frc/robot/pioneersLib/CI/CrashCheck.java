@@ -1,12 +1,14 @@
 package frc.robot.pioneersLib.CI;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.hal.DriverStationJNI;
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.Robot;
 
@@ -14,11 +16,17 @@ public class CrashCheck extends RobotBase {
     private static final AtomicReference<CrashCheck> instance = new AtomicReference<>();
     private final Robot robot;
     private final AtomicReference<CrashCheckStates> currentState = new AtomicReference<>(CrashCheckStates.DISABLED);
-    private final Timer timer = new Timer();
     private final AtomicBoolean hasError = new AtomicBoolean(false);
+    
     private String lastError = "";
+    private long startTime = 0;
     // Holy I hate this notation so much (Required as a flag)
     private boolean m_robotMainOverridden;
+    
+    // Error yapp
+    private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+    private final PrintStream originalErr = System.err;
+    private final PrintStream customErr = new PrintStream(errorStream);
 
     private enum CrashCheckStates {
         DISABLED("DISABLED", () -> {
@@ -85,9 +93,13 @@ public class CrashCheck extends RobotBase {
 
     public CrashCheck() {
         this.robot = new Robot();
+        HAL.initialize(500, 0);
+
         DriverStationSim.setEnabled(false);
         DriverStationSim.setAutonomous(false);
         DriverStationSim.setTest(false);
+
+        System.setErr(customErr);
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             handleError(throwable);
@@ -112,16 +124,6 @@ public class CrashCheck extends RobotBase {
     private void updateState() {
         CrashCheckStates lastState = currentState.get();
 
-        if (DriverStation.isDisabled()) {
-            currentState.set(CrashCheckStates.DISABLED);
-        } else if (DriverStation.isTeleopEnabled()) {
-            currentState.set(CrashCheckStates.TELEOP);
-        } else if (DriverStation.isAutonomousEnabled()) {
-            currentState.set(CrashCheckStates.AUTONOMOUS);
-        } else if (DriverStation.isTestEnabled()) {
-            currentState.set(CrashCheckStates.TEST);
-        }
-
         if (lastState != currentState.get()) {
             if (lastState != null) {
                 lastState.exit();
@@ -131,26 +133,75 @@ public class CrashCheck extends RobotBase {
         currentState.get().periodic();
     }
 
+    private void setMode(CrashCheckStates newState) {
+        if (currentState.get() != newState) {
+            currentState.set(newState);
+            switch (newState) {
+                case DISABLED:
+                    DriverStationSim.setEnabled(false);
+                    break;
+                case TELEOP:
+                    DriverStationSim.setEnabled(true);
+                    DriverStationSim.setAutonomous(false);
+                    DriverStationSim.setTest(false);
+                    break;
+                case AUTONOMOUS:
+                    DriverStationSim.setEnabled(true);
+                    DriverStationSim.setAutonomous(true);
+                    DriverStationSim.setTest(false);
+                    break;
+                case TEST:
+                    DriverStationSim.setEnabled(true);
+                    DriverStationSim.setAutonomous(false);
+                    DriverStationSim.setTest(true);
+                    break;
+            }
+        }
+    }
+
     // L
     @Override
     public void startCompetition() {
         robot.robotInit();
-        
+
         System.out.println("********** Robot program startup complete **********");
-        
-        while (true) {
-            if (Thread.currentThread().isInterrupted()) {
-                System.exit(1);
-                return;
-            }
-            
+
+        // Having to use this is actually crazy, massive skill issue ngl
+        startTime = System.nanoTime();
+
+        while (!m_robotMainOverridden) {
+            double testTime = (System.nanoTime() - startTime) / 1e9;
+
+            DriverStationSim.notifyNewData();
             DriverStation.refreshData();
+
+            // Run test sequence
+            // System.out.println("Test Time: " + testTime);
+
+            // State Transitions
+            if (testTime < 2.0) {
+                setMode(CrashCheckStates.DISABLED);
+            } else if (testTime < 4.0) {
+                setMode(CrashCheckStates.TELEOP);
+            } else if (testTime < 6.0) {
+                setMode(CrashCheckStates.AUTONOMOUS);
+            } else {
+                System.out.println("Test completed after " + testTime + " seconds");
+                break;
+            }
+
+            checkForErrors();
+
             if (hasErrors()) {
                 System.out.println("Crashed In " + currentState.get().getStateString());
+                throw new Error("lallalaal");
+                // System.exit(1);
+                // break;
             }
-            runTest();
+            // Actually runs periodics
             updateState();
 
+            // Equivalent to aknowledging disabled/enabled/whatever
             if (currentState.get() == CrashCheckStates.DISABLED) {
                 DriverStationJNI.observeUserProgramDisabled();
             } else if (currentState.get() == CrashCheckStates.TELEOP) {
@@ -162,7 +213,17 @@ public class CrashCheck extends RobotBase {
             }
 
             NetworkTableInstance.getDefault().flushLocal();
+
+            // This the periodic thingy or sum or other
+            try {
+                Thread.sleep(20); 
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
+
+        System.out.println("********** Competition Ended **********");
     }
 
     @Override
@@ -170,31 +231,18 @@ public class CrashCheck extends RobotBase {
         m_robotMainOverridden = true;
     }
 
-    private void runTest() {
-        timer.start();
-        if (timer.get() < 2) {
-            currentState.set(CrashCheckStates.DISABLED);
-        } else if (timer.get() < 4) {
-            currentState.set(CrashCheckStates.TELEOP);
-        } else if (timer.get() < 6) {
-            currentState.set(CrashCheckStates.AUTONOMOUS);
-        } else {
-            System.exit(0);
-            this.endCompetition();
-        }
-    }
-
     private void handleError(Throwable t) {
+        // Ion even know if this part works fr   
         hasError.set(true);
         StringBuilder errorMsg = new StringBuilder();
         errorMsg.append("Error in state ").append(currentState.get().getStateString())
-               .append(": ").append(t.toString()).append("\n");
-        
+                .append(": ").append(t.toString()).append("\n");
+
         // Add stack trace
         for (StackTraceElement element : t.getStackTrace()) {
             errorMsg.append("    at ").append(element.toString()).append("\n");
         }
-        
+
         lastError = errorMsg.toString();
         System.err.println(lastError);
     }
@@ -206,5 +254,22 @@ public class CrashCheck extends RobotBase {
             return true;
         }
         return false;
+    }
+
+    private void checkForErrors() {
+        String errors = errorStream.toString();
+        if (errors.contains("Exception") || 
+            errors.contains("Error") || 
+            errors.contains("NULL") || 
+            errors.contains("NullPointerException")) {
+            
+            hasError.set(true);
+            lastError = errors;
+            errorStream.reset(); // Clear the stream for next check
+            
+            // Print to original error stream for debugging
+            originalErr.println("Error detected in state " + currentState.get().getStateString());
+            originalErr.println(lastError);
+        }
     }
 }
