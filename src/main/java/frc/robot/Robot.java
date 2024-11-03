@@ -20,6 +20,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
+		System.out.println("init called");
 		managerSubsystem = new Manager();
 
 		// PLEASE NEVER COMMENT THIS
@@ -35,7 +36,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		System.out.println("Robot actually runned");
+		// System.out.println("Robot actually runned");
 		managerSubsystem.periodic();
 		CommandScheduler.getInstance().run();
 	}
