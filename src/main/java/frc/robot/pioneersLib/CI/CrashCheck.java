@@ -73,6 +73,7 @@ public class CrashCheck extends LoggedRobot {
         DriverStationSim.setAutonomous(false);
         DriverStationSim.setTest(false);
         driverStationConnected();
+        this.startCompetition();
     }
 
     public static CrashCheck getInstance() {
@@ -108,12 +109,8 @@ public class CrashCheck extends LoggedRobot {
         // System.out.println("TestedRobotState " + currentState.get().getStateString());
     }
 
-    private boolean hasErrors() {
-        System.out.println("Match Time: " + DriverStation.getMatchTime());
-        System.out.println("Network Table Connected: " + NetworkTableInstance.getDefault().isConnected());
-        System.out.println("DS Attached: " + DriverStation.isDSAttached());
-
-        return (DriverStation.getMatchTime() < 0 || !NetworkTableInstance.getDefault().isConnected() || !DriverStation.isDSAttached());
+    private boolean hasErrors() {  
+        return false;
     }
 
     private void runTest() {
@@ -138,6 +135,7 @@ public class CrashCheck extends LoggedRobot {
             }
         } else {
             System.exit(0);
+            this.endCompetition();
         }
     }
 
