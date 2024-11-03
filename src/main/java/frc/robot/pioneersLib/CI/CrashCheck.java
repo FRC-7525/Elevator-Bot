@@ -102,7 +102,7 @@ public class CrashCheck extends RobotBase {
         System.setErr(customErr);
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            handleError(throwable);
+            System.exit(1);
         });
     }
 
@@ -190,18 +190,8 @@ public class CrashCheck extends RobotBase {
                 break;
             }
 
-            checkForErrors();
-
-            if (hasErrors()) {
-                System.out.println("Crashed In " + currentState.get().getStateString());
-                throw new Error("lallalaal");
-                // System.exit(1);
-                // break;
-            }
-            // Actually runs periodics
             updateState();
 
-            // Equivalent to aknowledging disabled/enabled/whatever
             if (currentState.get() == CrashCheckStates.DISABLED) {
                 DriverStationJNI.observeUserProgramDisabled();
             } else if (currentState.get() == CrashCheckStates.TELEOP) {
@@ -229,47 +219,5 @@ public class CrashCheck extends RobotBase {
     @Override
     public void endCompetition() {
         m_robotMainOverridden = true;
-    }
-
-    private void handleError(Throwable t) {
-        // Ion even know if this part works fr   
-        hasError.set(true);
-        StringBuilder errorMsg = new StringBuilder();
-        errorMsg.append("Error in state ").append(currentState.get().getStateString())
-                .append(": ").append(t.toString()).append("\n");
-
-        // Add stack trace
-        for (StackTraceElement element : t.getStackTrace()) {
-            errorMsg.append("    at ").append(element.toString()).append("\n");
-        }
-
-        lastError = errorMsg.toString();
-        System.err.println(lastError);
-    }
-
-    private boolean hasErrors() {
-        if (hasError.get()) {
-            System.err.println("Test failed in state " + currentState.get().getStateString());
-            System.err.println("Last error:\n" + lastError);
-            return true;
-        }
-        return false;
-    }
-
-    private void checkForErrors() {
-        String errors = errorStream.toString();
-        if (errors.contains("Exception") || 
-            errors.contains("Error") || 
-            errors.contains("NULL") || 
-            errors.contains("NullPointerException")) {
-            
-            hasError.set(true);
-            lastError = errors;
-            errorStream.reset(); // Clear the stream for next check
-            
-            // Print to original error stream for debugging
-            originalErr.println("Error detected in state " + currentState.get().getStateString());
-            originalErr.println(lastError);
-        }
     }
 }

@@ -19,7 +19,16 @@ jobs:
         run: chmod +x gradlew
       - name: Build robot code
         run: ./gradlew build
-      - name: Run Simulation
+      - name: Run Simulation and Capture Logs
         env:                
             CI_NAME: "Crash"
-        run: ./gradlew simulateJava
+        run: ./gradlew simulateJava | tee simulateJava.log
+
+      - name: Check for Errors in Logs
+        run: |
+          if grep -qE "Exception|Error|NULL|NullPointerException" simulateJava.log; then
+            echo "Errors detected in simulation logs."
+            exit 1
+          else
+            echo "No errors detected in simulation logs."
+          fi
