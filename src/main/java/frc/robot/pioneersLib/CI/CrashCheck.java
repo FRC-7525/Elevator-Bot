@@ -75,7 +75,7 @@ public class CrashCheck extends Robot {
     }
 
     private boolean hasErrors() {
-        return (DriverStation.getMatchTime() < 0 || !DriverStation.isDSAttached() || !NetworkTableInstance.getDefault().isConnected());
+        return (DriverStation.getMatchTime() < 0 || !NetworkTableInstance.getDefault().isConnected());
     }
     
 
