@@ -3,6 +3,7 @@ package frc.robot.pioneersLib.CI;
 import java.sql.Driver;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.Robot;
@@ -13,33 +14,62 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 
-public class CrashCheck extends Robot {
+public class CrashCheck extends LoggedRobot {
     // Took a lot of stuff from 3173
     // lowkey atomics are peak
     private static final AtomicReference<CrashCheck> instance = new AtomicReference<>();
+    private static Robot robot;
     private final AtomicReference<CrashCheckStates> currentState = new AtomicReference<>(CrashCheckStates.DISABLED);
     private final Timer timer = new Timer();
 
     // implementing subsystem states is nasty work
     private enum CrashCheckStates {
-        DISABLED("DISABLED"),
-        TELEOP("TELEOP"),
-        AUTONOMOUS("AUTONOMOUS"),
-        TEST("TEST");
+        DISABLED("DISABLED", () -> {
+            robot.disabledPeriodic();
+        }, () -> {
+            robot.disabledInit();
+        }),
+        TELEOP("TELEOP", () -> {
+            robot.teleopPeriodic();
+        }, () -> {
+            robot.teleopInit();
+        }),
+        AUTONOMOUS("AUTONOMOUS", () -> {
+            robot.autonomousPeriodic();
+        }, () -> {
+            robot.autonomousInit();
+        }),
+        TEST("TEST", () -> {
+            robot.testPeriodic();
+        }, () -> {
+            robot.testInit();
+        });
 
         private String state;
+        private Runnable periodic;
+        private Runnable init;
 
-        CrashCheckStates(String state) {
+        CrashCheckStates(String state, Runnable periodic, Runnable init) {
             this.state = state;
+            this.periodic = periodic;
+            this.init = init;
         }
 
         public String getStateString() {
             return state;
         }
+
+        public void periodic() {
+            periodic.run();
+        }
+
+        public void init() {
+            init.run();
+        }
     }
 
     // :( public bc needed for main
-    public CrashCheck() {
+    public CrashCheck(Robot robot) {
         // Lalalalalala (Sets up important stuff)
         DriverStationSim.setEnabled(false);
         DriverStationSim.setAutonomous(false);
@@ -47,10 +77,10 @@ public class CrashCheck extends Robot {
         driverStationConnected();
     }
 
-    public static CrashCheck getInstance() {
+    public static CrashCheck getInstance(Robot robot) {
         synchronized (CrashCheck.class) {
             if (instance.get() == null) {
-                CrashCheck newInstance = new CrashCheck();
+                CrashCheck newInstance = new CrashCheck(robot);
                 instance.set(newInstance);
                 return newInstance;
             }
@@ -59,6 +89,7 @@ public class CrashCheck extends Robot {
     }
 
     private void updateState() {
+        CrashCheckStates lastState = currentState.get();
         if (DriverStation.isDisabled()) {
             currentState.set(CrashCheckStates.DISABLED);
         } else if (DriverStation.isTeleopEnabled()) {
@@ -68,16 +99,20 @@ public class CrashCheck extends Robot {
         } else if (DriverStation.isTestEnabled()) {
             currentState.set(CrashCheckStates.TEST);
         }
+
+        if (lastState != currentState.get()) {
+            currentState.get().init();
+        }
+        currentState.get().periodic();
     }
-    
+
     private void logState() {
-        System.out.println("TestedRobotState " + currentState.get().getStateString());
+        // System.out.println("TestedRobotState " + currentState.get().getStateString());
     }
 
     private boolean hasErrors() {
         return (DriverStation.getMatchTime() < 0 || !NetworkTableInstance.getDefault().isConnected());
     }
-    
 
     private void runTest() {
         timer.start();
@@ -86,13 +121,13 @@ public class CrashCheck extends Robot {
             if (hasErrors()) {
                 System.out.println("Crashes in Disabled");
                 // System.exit(1);
-            }        
+            }
         } else if (timer.get() < 2) {
             currentState.set(CrashCheckStates.TELEOP);
             if (hasErrors()) {
                 System.out.println("Crashes in Teleop");
                 // System.exit(1);
-            }        
+            }
         } else if (timer.get() < 3) {
             currentState.set(CrashCheckStates.AUTONOMOUS);
             if (hasErrors()) {
