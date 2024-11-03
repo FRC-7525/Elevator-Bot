@@ -1,5 +1,6 @@
 package frc.robot.pioneersLib.CI;
 
+import java.sql.Driver;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.littletonrobotics.junction.Logger;
@@ -73,14 +74,31 @@ public class CrashCheck extends Robot {
         System.out.println("TestedRobotState " + currentState.get().getStateString());
     }
 
+    private boolean hasErrors() {
+        return (DriverStation.getMatchTime() < 0 || !DriverStation.isDSAttached() || !NetworkTableInstance.getDefault().isConnected());
+    }
+    
+
     private void runTest() {
         timer.start();
-        if (timer.get() < 5) {
+        if (timer.get() < 1) {
             currentState.set(CrashCheckStates.DISABLED);
-        } else if (timer.get() < 10) {
+            if (hasErrors()) {
+                System.out.println("Crashes in Disabled");
+                System.exit(1);
+            }        
+        } else if (timer.get() < 2) {
             currentState.set(CrashCheckStates.TELEOP);
-        } else if (timer.get() < 15) {
+            if (hasErrors()) {
+                System.out.println("Crashes in Teleop");
+                System.exit(1);
+            }        
+        } else if (timer.get() < 3) {
             currentState.set(CrashCheckStates.AUTONOMOUS);
+            if (hasErrors()) {
+                System.out.println("Crashes in Auto");
+                System.exit(1);
+            }
         } else {
             System.exit(0);
         }
