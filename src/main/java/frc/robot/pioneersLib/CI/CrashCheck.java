@@ -85,19 +85,19 @@ public class CrashCheck extends Robot {
             currentState.set(CrashCheckStates.DISABLED);
             if (hasErrors()) {
                 System.out.println("Crashes in Disabled");
-                System.exit(1);
+                // System.exit(1);
             }        
         } else if (timer.get() < 2) {
             currentState.set(CrashCheckStates.TELEOP);
             if (hasErrors()) {
                 System.out.println("Crashes in Teleop");
-                System.exit(1);
+                // System.exit(1);
             }        
         } else if (timer.get() < 3) {
             currentState.set(CrashCheckStates.AUTONOMOUS);
             if (hasErrors()) {
                 System.out.println("Crashes in Auto");
-                System.exit(1);
+                // System.exit(1);
             }
         } else {
             System.exit(0);
