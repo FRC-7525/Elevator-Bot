@@ -15,7 +15,7 @@ public class Intake extends Subsystem<IntakeStates> {
 
     public Intake(IntakeIO io) {
         super(SUBSYTEM_NAME, IntakeStates.INTAKE);
-        // inputs = new IntakeIOInputsAutoLogged();
+        inputs = new IntakeIOInputsAutoLogged();
         outputs = new IntakeIOOutputs();
 
         this.io = io;
