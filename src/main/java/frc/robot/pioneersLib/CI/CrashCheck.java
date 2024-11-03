@@ -74,6 +74,7 @@ public class CrashCheck extends Robot {
     }
 
     private void runTest() {
+        System.out.println("Running test");
         timer.start();
         if (timer.get() < 5) {
             currentState.set(CrashCheckStates.DISABLED);
