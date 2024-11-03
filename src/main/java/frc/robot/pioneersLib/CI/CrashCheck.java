@@ -1,10 +1,8 @@
 package frc.robot.pioneersLib.CI;
 
-import java.sql.Driver;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
 
 import frc.robot.Robot;
 
@@ -18,7 +16,7 @@ public class CrashCheck extends LoggedRobot {
     // Took a lot of stuff from 3173
     // lowkey atomics are peak
     private static final AtomicReference<CrashCheck> instance = new AtomicReference<>();
-    private static Robot robot;
+    private static Robot robot = new Robot();
     private final AtomicReference<CrashCheckStates> currentState = new AtomicReference<>(CrashCheckStates.DISABLED);
     private final Timer timer = new Timer();
 
@@ -69,7 +67,7 @@ public class CrashCheck extends LoggedRobot {
     }
 
     // :( public bc needed for main
-    public CrashCheck(Robot robot) {
+    public CrashCheck() {
         // Lalalalalala (Sets up important stuff)
         DriverStationSim.setEnabled(false);
         DriverStationSim.setAutonomous(false);
@@ -77,10 +75,10 @@ public class CrashCheck extends LoggedRobot {
         driverStationConnected();
     }
 
-    public static CrashCheck getInstance(Robot robot) {
+    public static CrashCheck getInstance() {
         synchronized (CrashCheck.class) {
             if (instance.get() == null) {
-                CrashCheck newInstance = new CrashCheck(robot);
+                CrashCheck newInstance = new CrashCheck();
                 instance.set(newInstance);
                 return newInstance;
             }
