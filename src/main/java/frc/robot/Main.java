@@ -25,7 +25,6 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    // RobotBase.startRobot("Crash".equals(System.getenv("CI_NAME")) ? CrashCheck::getInstance : Robot::new);
-    RobotBase.startRobot(CrashCheck::getInstance);
+    RobotBase.startRobot("Crash".equals(System.getenv("CI_NAME")) ? CrashCheck::getInstance : Robot::new);
   }
 }
