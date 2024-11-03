@@ -70,11 +70,10 @@ public class CrashCheck extends Robot {
     }
     
     private void logState() {
-        Logger.recordOutput("TestedRobotState", currentState.get().getStateString());
+        System.out.println("TestedRobotState " + currentState.get().getStateString());
     }
 
     private void runTest() {
-        System.out.println("Running test");
         timer.start();
         if (timer.get() < 5) {
             currentState.set(CrashCheckStates.DISABLED);
@@ -83,7 +82,7 @@ public class CrashCheck extends Robot {
         } else if (timer.get() < 15) {
             currentState.set(CrashCheckStates.AUTONOMOUS);
         } else {
-            System.exit(1);
+            System.exit(0);
         }
     }
 

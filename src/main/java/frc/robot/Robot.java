@@ -55,6 +55,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopPeriodic() {
+		System.out.println("Teleop actually runned");
 	}
 
 	@Override
