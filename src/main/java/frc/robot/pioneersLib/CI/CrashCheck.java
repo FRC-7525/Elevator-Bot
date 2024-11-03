@@ -1,8 +1,5 @@
 package frc.robot.pioneersLib.CI;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.hal.DriverStationJNI;
@@ -16,17 +13,12 @@ public class CrashCheck extends RobotBase {
     private static final AtomicReference<CrashCheck> instance = new AtomicReference<>();
     private final Robot robot;
     private final AtomicReference<CrashCheckStates> currentState = new AtomicReference<>(CrashCheckStates.DISABLED);
-    private final AtomicBoolean hasError = new AtomicBoolean(false);
+    private final AtomicReference<CrashCheckStates> lastState = new AtomicReference<>(CrashCheckStates.TEST);
     
-    private String lastError = "";
     private long startTime = 0;
     // Holy I hate this notation so much (Required as a flag)
     private boolean m_robotMainOverridden;
-    
-    // Error yapp
-    private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-    private final PrintStream originalErr = System.err;
-    private final PrintStream customErr = new PrintStream(errorStream);
+    private boolean lastStateSet = false;
 
     private enum CrashCheckStates {
         DISABLED("DISABLED", () -> {
@@ -99,8 +91,6 @@ public class CrashCheck extends RobotBase {
         DriverStationSim.setAutonomous(false);
         DriverStationSim.setTest(false);
 
-        System.setErr(customErr);
-
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             System.exit(1);
         });
@@ -122,15 +112,15 @@ public class CrashCheck extends RobotBase {
     }
 
     private void updateState() {
-        CrashCheckStates lastState = currentState.get();
-
-        if (lastState != currentState.get()) {
+        if (lastState.get() != currentState.get() && lastStateSet) {
             if (lastState != null) {
-                lastState.exit();
-                System.out.println(lastState.getStateString() + " ran propperly.");
+                lastState.get().exit();
+                System.out.println(lastState.get().getStateString() + " ran propperly.");
             }
             currentState.get().init();
         }
+        lastState.set(currentState.get());
+        lastStateSet = true;
         currentState.get().periodic();
     }
 
@@ -186,7 +176,10 @@ public class CrashCheck extends RobotBase {
                 setMode(CrashCheckStates.TELEOP);
             } else if (testTime < 6.0) {
                 setMode(CrashCheckStates.AUTONOMOUS);
+            } else if (testTime < 8.0) {
+                setMode(CrashCheckStates.TEST);
             } else {
+                System.out.println(currentState.get().getStateString() + " ran propperly.");
                 System.out.println("Test completed after " + testTime + " seconds");
                 break;
             }
@@ -213,7 +206,6 @@ public class CrashCheck extends RobotBase {
                 break;
             }
         }
-
         System.out.println("********** Competition Ended **********");
     }
 

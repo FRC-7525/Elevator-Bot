@@ -33,7 +33,7 @@ jobs:
           fi
 
           # Check for modes
-          if grep -q "DISABLED" simulateJava.log && grep -q "TELEOP" simulateJava.log && grep -q "AUTONOMOUS" simulateJava.log; then
+          if grep -q "DISABLED" simulateJava.log && grep -q "TELEOP" simulateJava.log && grep -q "AUTONOMOUS" simulateJava.log && grep -q "TEST" simulateJava.log; then
             echo "All modes found in simulation logs."
           else
             echo "One or more modes not found in simulation logs (See Crash for Details)."
