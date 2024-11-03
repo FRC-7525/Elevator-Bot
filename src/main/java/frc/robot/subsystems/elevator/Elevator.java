@@ -9,6 +9,8 @@ import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOOutputs;
 
+import static frc.robot.Constants.Elevator.*;
+
 public class Elevator extends Subsystem<ElevatorStates> {
 
     private ElevatorIO io;
@@ -28,7 +30,7 @@ public class Elevator extends Subsystem<ElevatorStates> {
         this.outputs = new ElevatorIOOutputs();
 
         this.sysIdRoutine = new SysIdRoutine(
-                new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                new SysIdRoutine.Config(null, null, null, (state) -> Logger.recordOutput(SUBSYTEM_NAME + "/SysIdState", state.toString())),
                 new SysIdRoutine.Mechanism(io::runVolts, null, this));
     }
 

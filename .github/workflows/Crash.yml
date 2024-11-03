@@ -1,0 +1,24 @@
+name: Crash
+
+on: 
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Run Simulation
+        env:                
+            CI_NAME: "Crash"
+        run: ./gradlew simulateJava
