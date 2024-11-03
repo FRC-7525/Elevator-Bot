@@ -26,6 +26,7 @@ jobs:
 
       - name: Check for Errors in Logs
         run: |
+          echo grep -qE simulateJava.log
           if grep -qE "Exception|Error|NULL|NullPointerException" simulateJava.log; then
             echo "Errors detected in simulation logs."
             exit 1
