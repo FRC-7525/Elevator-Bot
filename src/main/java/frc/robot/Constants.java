@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.Current;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Mass;
@@ -27,6 +26,7 @@ public final class Constants {
     }
 
     public static final RobotModes ROBOT_STATE = RobotModes.SIM;
+    public static final boolean TUNING = true;
 
     public static final class Conversions {
         public static final double METERS_TO_FEET = 3.28084;
@@ -77,7 +77,8 @@ public final class Constants {
     }
 
     public static final class Manager {
-        // Should hold toggles for different triggers
+        // Should hold toggles for different triggers (lowkey highkey middle key don't think this is needed att all)
+        // TODO: Delete once manager fully fleshed out
     }
 
     public static final class Elevator {
@@ -105,8 +106,8 @@ public final class Constants {
 
         // Set-States
         public static final class SetStates {
-            public static final State ELEVATOR_OUT = new State(1.5, 0);
-            public static final State ELEVATOR_IN = new State(0, 0);
+            public static final SubsystemState ELEVATOR_OUT = SubsystemState.fromElevatorStates("Elevator Out", Meters.of(1.5), MetersPerSecond.of(0));
+            public static final SubsystemState ELEVATOR_IN = SubsystemState.fromElevatorStates("Elevator In", Meters.of(0), MetersPerSecond.of(0));
         }
 
         // TODO: Confirm these are acceptable

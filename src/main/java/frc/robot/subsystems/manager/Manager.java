@@ -41,8 +41,8 @@ public class Manager extends Subsystem<ManagerStates> {
                 break;
         }
 
-        // Keep this below the swith statement to avoid null pointers :(
         autoManager = new AutoManager(this);
+        setupTesting();
 
         // Passing
         addTrigger(ManagerStates.IDLE, ManagerStates.RISING, () -> DRIVER_CONTROLLER.getAButtonPressed());
@@ -65,13 +65,17 @@ public class Manager extends Subsystem<ManagerStates> {
 
     @Override
     public void runState() {
-
         // Run Subsystem Periodics (comment out for sysId if u wana be safe ig)
         elevator.periodic();
         intake.periodic();
 
         // Run Subsystem States 
         elevator.setState(getState().getElevatorState());
+    }
+
+    private void setupTesting() {
+        elevator.logPID(Constants.TUNING);
+        intake.logPID(Constants.TUNING);
     }
 
     public Command getAutoCommand() {

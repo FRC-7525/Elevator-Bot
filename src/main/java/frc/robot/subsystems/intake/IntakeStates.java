@@ -25,11 +25,11 @@ public enum IntakeStates implements SubsystemStates{
         return state.stateString();
     }
 
-    public Measure<Velocity<Angle>> getSpeedPoint() {
+    protected Measure<Velocity<Angle>> getSpeedPoint() {
         return state.angularVelocity();
     }
 
-    public Rotation2d getSetPoint() {
+    protected Rotation2d getSetPoint() {
         return state.angularPosition();
     }
 }
