@@ -94,19 +94,19 @@ public record SubsystemState(
      * No stupid states!!!
      */
     private void validateState() {
-        if (position.in(Meters) > 10) {
+        if (position != null && position.in(Meters) > 10 ) {
             throw new IllegalArgumentException("U prob have conversion errors or L code (position > 10m)");
         }
         
-        if (velocity.in(MetersPerSecond) > 40) {
+        if (velocity != null && velocity.in(MetersPerSecond) > 40) {
             throw new IllegalArgumentException("U prob have conversion errors or L code (velocity > 40m/s)");
         }
 
-        if (angularVelocity.in(RotationsPerSecond) > 200 || secondaryVelocity.in(RPM)/60 > 200) {
+        if (angularVelocity != null && angularVelocity.in(RotationsPerSecond) > 200 || secondaryVelocity != null && secondaryVelocity.in(RPM)/60 > 200) {
             throw new IllegalArgumentException("What motor is going 200 RPS or why is gearing so low? fix ur robot or code");
         }
 
-        if (acceleration.in(MetersPerSecondPerSecond) > 30) {
+        if (acceleration != null && acceleration.in(MetersPerSecondPerSecond) > 30) {
             throw new IllegalArgumentException("U prob have conversion errors or L code (acceleration > 30 m/s^2)");
         }
     }
