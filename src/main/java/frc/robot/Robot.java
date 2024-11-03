@@ -35,6 +35,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
+		System.out.println("Robot actually runned");
 		managerSubsystem.periodic();
 		CommandScheduler.getInstance().run();
 	}

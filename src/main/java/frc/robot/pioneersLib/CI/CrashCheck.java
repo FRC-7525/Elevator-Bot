@@ -109,7 +109,11 @@ public class CrashCheck extends LoggedRobot {
     }
 
     private boolean hasErrors() {
-        return (DriverStation.getMatchTime() < 0 || !NetworkTableInstance.getDefault().isConnected());
+        System.out.println("Match Time: " + DriverStation.getMatchTime());
+        System.out.println("Network Table Connected: " + NetworkTableInstance.getDefault().isConnected());
+        System.out.println("DS Attached: " + DriverStation.isDSAttached());
+
+        return (DriverStation.getMatchTime() < 0 || !NetworkTableInstance.getDefault().isConnected() || !DriverStation.isDSAttached());
     }
 
     private void runTest() {
@@ -117,19 +121,19 @@ public class CrashCheck extends LoggedRobot {
         if (timer.get() < 1) {
             currentState.set(CrashCheckStates.DISABLED);
             if (hasErrors()) {
-                System.out.println("Crashes in Disabled");
+                // System.out.println("Crashes in Disabled");
                 // System.exit(1);
             }
         } else if (timer.get() < 2) {
             currentState.set(CrashCheckStates.TELEOP);
             if (hasErrors()) {
-                System.out.println("Crashes in Teleop");
+                // System.out.println("Crashes in Teleop");
                 // System.exit(1);
             }
         } else if (timer.get() < 3) {
             currentState.set(CrashCheckStates.AUTONOMOUS);
             if (hasErrors()) {
-                System.out.println("Crashes in Auto");
+                // System.out.println("Crashes in Auto");
                 // System.exit(1);
             }
         } else {
