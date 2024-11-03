@@ -26,10 +26,16 @@ jobs:
 
       - name: Check for Errors in Logs
         run: |
-          cat simulateJava.log
+          # Check for errors
           if grep -qE "Exception|Error|NULL|NullPointerException" simulateJava.log; then
-            echo "Errors detected in simulation logs."
+            echo "Errors detected in simulation logs (See Crash for Details)."
             exit 1
+          fi
+
+          # Check for modes
+          if grep -q "DISABLED" simulateJava.log && grep -q "TELEOP" simulateJava.log && grep -q "AUTONOMOUS" simulateJava.log; then
+            echo "All modes found in simulation logs."
           else
-            echo "No errors detected in simulation logs."
+            echo "One or more modes not found in simulation logs (See Crash for Details)."
+            exit 1
           fi

@@ -127,7 +127,7 @@ public class CrashCheck extends RobotBase {
         if (lastState != currentState.get()) {
             if (lastState != null) {
                 lastState.exit();
-                System.out.println(lastState.getStateString() + " ran propperly");
+                System.out.println(lastState.getStateString() + " ran propperly.");
             }
             currentState.get().init();
         }
