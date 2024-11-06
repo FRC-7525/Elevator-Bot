@@ -13,6 +13,9 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.pioneersLib.faultCheck.DeviceTypes;
+import frc.robot.pioneersLib.faultCheck.FaultManager;
+import frc.robot.pioneersLib.faultCheck.FaultManager.Controller;
 
 import static frc.robot.Constants.Elevator.*;
 
@@ -35,6 +38,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     public ElevatorIOSparkMax() {
         // Sparkmax configs
         // TODO: Set to correct motor IDs
+        FaultManager faultManager = FaultManager.getInstance();
+
         leftMotor = new CANSparkMax(LEFT_CAN_ID, MotorType.kBrushless);
         rightMotor = new CANSparkMax(RIGHT_CAN_ID, MotorType.kBrushless);
         encoder = rightMotor.getEncoder();
@@ -53,7 +58,6 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
         rightMotor.burnFlash();
         leftMotor.burnFlash();
-
 
         // Configure FF and PID controllers, kA can be ignored for FF, PID is just PID but with a motion profile
         ffController = new ElevatorFeedforward(ELEVATOR_FF.kS, ELEVATOR_FF.kG, ELEVATOR_FF.kV, ELEVATOR_FF.kA);
@@ -74,6 +78,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         rightMotorZeroed = false;
         leftMotorZeroed = false;
         logPID = true;
+
+        faultManager.addDevice(faultManager.new Controller("Elevator Right Motor", DeviceTypes.SPARK, rightMotor));
+        faultManager.addDevice(faultManager.new Controller("Elevator Left Motor", DeviceTypes.SPARK, leftMotor));
     }
 
     // Update set of logged inputs

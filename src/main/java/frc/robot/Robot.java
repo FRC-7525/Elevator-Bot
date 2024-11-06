@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.pioneersLib.faultCheck.FaultManager;
 import frc.robot.pioneersLib.misc.CommandsUtil;
 import frc.robot.subsystems.manager.Manager;
 
@@ -37,6 +38,10 @@ public class Robot extends LoggedRobot {
 	public void robotPeriodic() {
 		managerSubsystem.periodic();
 		CommandScheduler.getInstance().run();
+
+		if (Constants.TESTING) {
+			FaultManager.getInstance().periodic();
+		}
 	}
 
 	@Override

@@ -10,6 +10,9 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.pioneersLib.faultCheck.DeviceTypes;
+import frc.robot.pioneersLib.faultCheck.FaultManager;
+import frc.robot.pioneersLib.faultCheck.FaultManager.Controller;
 
 import static frc.robot.Constants.Intake.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -47,6 +50,12 @@ public class IntakeIOSparkMax implements IntakeIO {
 
         spinnerMotor.burnFlash();
         positionMotor.burnFlash();
+
+        FaultManager faultManager = FaultManager.getInstance();
+        faultManager.addDevice(faultManager.new Controller("Intake Spinner Motor", DeviceTypes.SPARK, spinnerMotor));
+        faultManager.addDevice(faultManager.new Controller("Intake Pivot Motor", DeviceTypes.SPARK, positionMotor));
+   
+   
     }
 
     @Override

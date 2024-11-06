@@ -26,7 +26,8 @@ public final class Constants {
     }
 
     public static final RobotModes ROBOT_STATE = RobotModes.SIM;
-    public static final boolean TUNING = true;
+    public static final boolean TUNING = false;
+    public static final boolean TESTING = true;
 
     public static final class Conversions {
         public static final double METERS_TO_FEET = 3.28084;
